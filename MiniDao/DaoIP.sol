@@ -3,6 +3,10 @@ pragma solidity 0.8.18;
 
 
 contract DaoIP {
+    // TODOs
+    //  vote
+    //  get_votes
+    //  closeIP (only owners)
     string name;
     string description;
     address public immutable i_proposer;

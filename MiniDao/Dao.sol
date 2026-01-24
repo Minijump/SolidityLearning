@@ -5,7 +5,9 @@ import {DaoIP} from "./DaoIP.sol";
 
 
 contract Dao {
-    // note: struct and mapping may be useless (for actual impl.), let's keep it for now as it is a demo project
+    // TODOs: 
+    //  interface to use a DaoIP based (fctName(address))
+    //  improve data strct (remove useless things; struct and mapping may be useless)
     struct Daoproposal{
         address proposalAddress;
         DaoIP proposal;
