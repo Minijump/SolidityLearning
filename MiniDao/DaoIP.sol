@@ -2,14 +2,14 @@
 pragma solidity 0.8.18;
 
 error AlreadyVoted();
-
+error NotProposer();
+error ClosedIP();
 
 contract DaoIP {
-    // TODOs
-    //  closeIP (only owners)
     string name;
     string description;
     address public immutable i_proposer;
+    bool isOpen = true;
 
     enum Vote { Abstain, Approve, Reject }
     mapping(address => Vote) public votes;
@@ -23,7 +23,21 @@ contract DaoIP {
         i_proposer = msg.sender;
     }
 
-    function vote(Vote _vote) external {
+    modifier onlyProposer() {
+        if (msg.sender != i_proposer){
+            revert NotProposer();
+        }
+        _;
+    }
+
+    modifier openIP() {
+        if (!isOpen){
+            revert ClosedIP(); 
+        }
+        _;
+    }
+
+    function vote(Vote _vote) external openIP{
         if (votes[msg.sender] != Vote.Abstain){
             revert AlreadyVoted();
         }
@@ -39,5 +53,9 @@ contract DaoIP {
 
     function getVotesResults() public view returns (uint256, uint256) {
         return (approveCount, votesCount);
+    }
+
+    function closeIP() public onlyProposer openIP{
+        isOpen = false;
     }
 }
