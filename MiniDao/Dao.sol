@@ -6,7 +6,6 @@ import {DaoIP} from "./DaoIP.sol";
 
 contract Dao {
     // TODOs: 
-    //  interface to use a DaoIP based (fctName(address))
     //  improve data strct (remove useless things; struct and mapping may be useless)
     struct Daoproposal{
         address proposalAddress;
@@ -21,5 +20,15 @@ contract Dao {
         address proposalAddress = address(newProposal);
         proposals[proposalAddress] = Daoproposal(proposalAddress, newProposal);
         proposalList.push(proposalAddress);
+    }
+
+    function approveProposal(address _proposalAddress) public{
+        DaoIP proposal = proposals[_proposalAddress].proposal;
+        proposal.vote(DaoIP.Vote.Approve);
+    }
+
+    function rejectProposal(address _proposalAddress) public{
+        DaoIP proposal = proposals[_proposalAddress].proposal;
+        proposal.vote(DaoIP.Vote.Reject);
     }
 }
