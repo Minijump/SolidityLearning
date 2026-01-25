@@ -24,9 +24,9 @@ contract DaoIP {
     }
 
     function vote(Vote _vote) external {
-        // if (votes[msg.sender] != Vote.Abstain){
-        //     revert AlreadyVoted();
-        // }
+        if (votes[msg.sender] != Vote.Abstain){
+            revert AlreadyVoted();
+        }
         voters.push(msg.sender);
         votes[msg.sender] = _vote;
         if (_vote == Vote.Reject || _vote == Vote.Approve) {
