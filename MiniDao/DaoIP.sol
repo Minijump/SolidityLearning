@@ -6,7 +6,6 @@ error AlreadyVoted();
 
 contract DaoIP {
     // TODOs
-    //  get_votes
     //  closeIP (only owners)
     string name;
     string description;
@@ -25,9 +24,9 @@ contract DaoIP {
     }
 
     function vote(Vote _vote) external {
-        if (votes[msg.sender] != Vote.Abstain){
-            revert AlreadyVoted();
-        }
+        // if (votes[msg.sender] != Vote.Abstain){
+        //     revert AlreadyVoted();
+        // }
         voters.push(msg.sender);
         votes[msg.sender] = _vote;
         if (_vote == Vote.Reject || _vote == Vote.Approve) {
@@ -36,5 +35,9 @@ contract DaoIP {
         if (_vote == Vote.Approve) {
             approveCount += 1;
         }
+    }
+
+    function getVotesResults() public view returns (uint256, uint256) {
+        return (approveCount, votesCount);
     }
 }
