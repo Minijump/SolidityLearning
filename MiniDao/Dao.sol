@@ -5,8 +5,6 @@ import {DaoIP} from "./DaoIP.sol";
 
 
 contract Dao {
-    // TODOs: 
-    //  improve data strct (remove useless things; struct and mapping may be useless)
     struct Daoproposal{
         address proposalAddress;
         DaoIP proposal;
