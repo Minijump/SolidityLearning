@@ -2,6 +2,7 @@
 pragma solidity 0.8.18;
 
 error AlreadyVoted();
+error DidNotVote();
 error NotProposer();
 error ClosedIP();
 
@@ -49,6 +50,14 @@ contract DaoIP {
         if (_vote == Vote.Approve) {
             approveCount += 1;
         }
+    }
+
+    function cancelVote() external{
+        if (votes[msg.sender] != Vote.Approve && votes[msg.sender] != Vote.Reject) {
+            revert DidNotVote();
+        }
+        votes[msg.sender] = Vote.Abstain;
+        votesCount -= 1;
     }
 
     function getVotesResults() public view returns (uint256, uint256) {

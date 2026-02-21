@@ -25,6 +25,11 @@ contract Dao {
         proposal.vote(DaoIP.Vote.Reject);
     }
 
+    function cancelVoteProposal(address _proposalAddress) public{
+        DaoIP proposal = proposals[_proposalAddress];
+        proposal.cancelVote();
+    }
+
     function closeProposal(address _proposalAddress) public{
         DaoIP proposal = proposals[_proposalAddress];
         proposal.closeIP();
