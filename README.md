@@ -7,6 +7,8 @@ a repo where I add all the small code I did to learn a bit of solidity
 
 [Remix] = project was done on remix
 
+[Foundry] = project was runned with foundry
+
 ### Simple storage [Cyfrin][Remix]
 Allows storing variable/constants with differents data stuctures.
 
@@ -18,3 +20,6 @@ Small fake crowdfunding project. (simplified compared to cyfrin course, removed 
 
 ### MiniDao [Me][Remix]
 The creation of a mini dao smart contract enabling voting, seeing votes, ...
+
+### Foundry Simple storage [Cyfrin][Foundry]
+The scope of this project is the same as Simple storage but this time we will use foundry to run it.
