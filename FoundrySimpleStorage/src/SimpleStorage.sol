@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.18;
 
-contract SimpleSorage {
+contract SimpleStorage {
     struct Person {
         uint256 myFavouriteNumber;
         string name;

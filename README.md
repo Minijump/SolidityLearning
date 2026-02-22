@@ -23,3 +23,12 @@ The creation of a mini dao smart contract enabling voting, seeing votes, ...
 
 ### Foundry Simple storage [Cyfrin][Foundry]
 The scope of this project is the same as Simple storage but this time we will use foundry to run it.
+
+Create a new project with: forge init (--use-parent-git)
+
+in another terminal, with wsl/
+- To run local blockchain: anvil
+
+on project folder, with wsl:
+- To compile: forge compile
+- To deploy contract: forge create ContractName --rpc-url HTTP://127.0.0.1:8545 --private-key xxxx (or --interactive)(find private key and url on anvil)  ==> private key here is only with test ones, NEVER do this with a real one, interactive is better
