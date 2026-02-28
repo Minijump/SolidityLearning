@@ -32,3 +32,6 @@ in another terminal, with wsl/
 on project folder, with wsl:
 - To compile: forge compile
 - To deploy contract: forge create ContractName --rpc-url HTTP://127.0.0.1:8545 --private-key xxxx (or --interactive)(find private key and url on anvil)  ==> private key here is only with test ones, NEVER do this with a real one, interactive is better
+- To deploy with a script (in temp blockchain, dleted afterward): forge script script/DeploySimpleStorage.s.sol
+- To simulate deployment on anvil: forge script script/DeploySimpleStorage.s.sol --rpc-url HTTP://127.0.0.1:8545
+- To deploy on anvil: forge script script/DeploySimpleStorage.s.sol --rpc-url HTTP://127.0.0.1:8545 --broadcast --private-key xxxx
