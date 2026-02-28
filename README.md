@@ -35,3 +35,10 @@ on project folder, with wsl:
 - To deploy with a script (in temp blockchain, dleted afterward): forge script script/DeploySimpleStorage.s.sol
 - To simulate deployment on anvil: forge script script/DeploySimpleStorage.s.sol --rpc-url HTTP://127.0.0.1:8545
 - To deploy on anvil: forge script script/DeploySimpleStorage.s.sol --rpc-url HTTP://127.0.0.1:8545 --broadcast --private-key xxxx
+
+Cast
+- store a private key: cast wallet import defaultKey --interactive
+    - list them all: cast wallet list
+    - usage: use --account defaultKey --sender xxxsenderPublicAddressxxx instead of --private-key
+- process transaction: cast send xxxsenderAddressxxx "fctName(argsType)" args --rpc-url URL --private-key KEY
+- read on blockchain: cast call xxxsenderAddressxxx "fctName(argsType)" args
