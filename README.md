@@ -24,6 +24,9 @@ The creation of a mini dao smart contract enabling voting, seeing votes, ...
 ### Foundry Simple storage [Cyfrin][Foundry]
 The scope of this project is the same as Simple storage but this time we will use foundry to run it.
 
+### Foundry Fund me [Cyfrin][Foundry]
+Same as FundMe but used foundry to run it
+
 Create a new project with: forge init (--use-parent-git)
 
 in another terminal, with wsl/
