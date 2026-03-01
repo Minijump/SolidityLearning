@@ -34,8 +34,12 @@ contract FundMe {
     }
 
     modifier onlyOwner() {
-        if (msg.sender != i_owner) revert NotOwner();
+        _onlyOwner();
         _;
+    }
+
+    function _onlyOwner() internal view {
+        if (msg.sender != i_owner) revert NotOwner();
     }
 
     function withdraw() public onlyOwner {
