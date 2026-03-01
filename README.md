@@ -45,3 +45,6 @@ Cast
     - usage: use --account defaultKey --sender xxxsenderPublicAddressxxx instead of --private-key
 - process transaction: cast send xxxsenderAddressxxx "fctName(argsType)" args --rpc-url URL --private-key KEY
 - read on blockchain: cast call xxxsenderAddressxxx "fctName(argsType)" args
+
+
+-run unit tests: forge test (-vvvvv)
