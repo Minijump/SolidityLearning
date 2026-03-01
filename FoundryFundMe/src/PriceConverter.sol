@@ -13,7 +13,7 @@ library PriceConverter {
         // (, int256 answer, , , ) = priceFeed.latestRoundData();
 
         // return a mock ETH/USD rate
-        int256 answer = 2000 * 100000000; // 2000 * 10^8
+        uint256 answer = 2000 * 100000000; // 2000 * 10^8
         return uint256(answer * 10000000000); // 2000 * 10^18
     }
 
