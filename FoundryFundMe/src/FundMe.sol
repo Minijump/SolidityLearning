@@ -13,11 +13,11 @@ contract FundMe {
     mapping(address => uint256) public addressToAmountFunded;
     address[] public funders;
 
-    address public /* immutable */ i_owner;
+    address public /* immutable */ iOwner;
     uint256 public constant MINIMUM_USD = 5 * 10 ** 18;
 
     constructor() {
-        i_owner = msg.sender;
+        iOwner = msg.sender;
     }
 
     function fund() public payable {
@@ -39,7 +39,7 @@ contract FundMe {
     }
 
     function _onlyOwner() internal view {
-        if (msg.sender != i_owner) revert NotOwner();
+        if (msg.sender != iOwner) revert NotOwner();
     }
 
     function withdraw() public onlyOwner {
