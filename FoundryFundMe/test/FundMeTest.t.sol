@@ -43,18 +43,18 @@ contract FundMeTest is Test {
         assertEq(amountFunded, FUND_AMOUNT);
     }
 
-    function testAddsFunderToArrayOfFunders() public {
+    modifier funded {
         vm.prank(USER);
         fundMe.fund{value: FUND_AMOUNT}();
+        _;
+    }
 
+    function testAddsFunderToArrayOfFunders() public funded{
         address funder = fundMe.funders(0);
         assertEq(funder, USER);
     }
 
-    function testOnlyOwnerCanWithdraw() public {
-        vm.prank(USER);
-        fundMe.fund{value: FUND_AMOUNT}();
-
+    function testOnlyOwnerCanWithdraw() public funded {
         vm.expectRevert();
         vm.prank(USER);
         fundMe.withdraw();
