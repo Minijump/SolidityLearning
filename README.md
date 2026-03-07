@@ -49,3 +49,5 @@ Cast
 
 - run unit tests: forge test (-vvvvv) (-m testName)
 - see test coverage: forge coverage
+- see what storage is used: forge inspect ContractName storageLayout
+- run test and see gas summary: forge snapshot
