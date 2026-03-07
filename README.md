@@ -47,4 +47,4 @@ Cast
 - read on blockchain: cast call xxxsenderAddressxxx "fctName(argsType)" args
 
 
--run unit tests: forge test (-vvvvv)
+-run unit tests: forge test (-vvvvv) (-m testName)
