@@ -5,8 +5,10 @@ import {Test, console} from "forge-std/Test.sol";
 import {FundMe} from "../src/FundMe.sol";
 import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 
+
 contract FundMeTest is Test {
     FundMe fundMe;
+    address USER = makeAddr("user");
 
     function setUp() external {
         DeployFundMe deployer = new DeployFundMe();
@@ -21,5 +23,18 @@ contract FundMeTest is Test {
     function testOwnerIsMsgSender() public view{
         address owner = fundMe.iOwner();
         assertEq(owner, msg.sender);
+    }
+
+    function testFundFailsWithoutEnoughEth() public {
+        vm.expectRevert();
+        fundMe.fund{value: 0}();
+    }
+
+    function testFundUpdatesFundedDataStructure() public {
+        vm.deal(USER, 1e18);
+        vm.prank(USER);
+        fundMe.fund{value: 1e18}();
+        uint256 amountFunded = fundMe.addressToAmountFunded(USER);
+        assertEq(amountFunded, 1e18);
     }
 }
