@@ -77,8 +77,7 @@ contract FundMeTest is Test {
         uint160 numberOfFunders = 10;
         for (uint160 i = 1; i <= numberOfFunders; i++) {
             address funder = address(i);
-            vm.deal(funder, 5e18);
-            vm.prank(funder);
+            hoax(funder, 1e18);
             fundMe.fund{value: FUND_AMOUNT}();
         }
         uint256 startingOwnerBalance = fundMe.iOwner().balance;
