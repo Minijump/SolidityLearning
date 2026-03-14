@@ -10,6 +10,9 @@ error Raffle_NotEnoughETHEntered();
  */
 contract Raffle {
     uint256 private immutable iEntranceFee;
+    address payable[] private sPlayers;
+
+    event RaffleEntered(address indexed player);
 
     constructor(uint256 entranceFee) {
         iEntranceFee = entranceFee;
@@ -19,7 +22,8 @@ contract Raffle {
         if (msg.value < iEntranceFee) {
             revert Raffle_NotEnoughETHEntered();
         }
-        // TODO logic to enter the raffle
+        sPlayers.push(payable(msg.sender));
+        emit RaffleEntered(msg.sender);
     }
 
     function getEntranceFee() public view returns (uint256) {
