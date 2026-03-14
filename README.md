@@ -27,6 +27,12 @@ The scope of this project is the same as Simple storage but this time we will us
 ### Foundry Fund me [Cyfrin][Foundry]
 Same as FundMe but used foundry to run it
 
+### SimpleLottery [Cyfrin][Foundry]
+Name is explicit, a lottery system ruled by smart contracts.
+
+
+
+# Cheatsheet
 Create a new project with: forge init (--use-parent-git)
 
 in another terminal, with wsl/
