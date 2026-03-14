@@ -24,6 +24,7 @@ contract Raffle {
     RaffleState private sRaffleState;
 
     event RaffleEntered(address indexed player);
+    event WinnerPicked(address indexed winner);
 
     constructor(uint256 entranceFee, uint256 interval) {
         iEntranceFee = entranceFee;
@@ -43,6 +44,7 @@ contract Raffle {
         emit RaffleEntered(msg.sender);
     }
 
+    // CEI: Checks, Effects, Interactions
     function pickWinner() external {
         if((block.timestamp - sLastTimeStamp) < iInterval) {
             revert Raffle__NoteTimeToPickWinner();
@@ -55,13 +57,15 @@ contract Raffle {
         uint256 randomNumber = 2; // for testing purposes, else use chainlink VRF
         uint256 winnerIndex = randomNumber % sPlayers.length;
         address payable winner = sPlayers[winnerIndex];
+        sPlayers = new address payable[](0);
+        sLastTimeStamp = block.timestamp;
+        sRaffleState = RaffleState.OPEN;
+        emit WinnerPicked(winner);
+    
         (bool success, ) = winner.call{value: address(this).balance}("");
         if (!success) {
             revert Raffle__TransferFailed();
         }
-        sPlayers = new address payable[](0);
-        sLastTimeStamp = block.timestamp;
-        sRaffleState = RaffleState.OPEN;
     }
 
     function getEntranceFee() external view returns (uint256) {
