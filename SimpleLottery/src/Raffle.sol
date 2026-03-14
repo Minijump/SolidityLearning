@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-error Raffle_NotEnoughETHEntered();
+error Raffle__NotEnoughETHEntered();
+error Raffle__NoteTimeToPickWinner();
+error Raffle__TransferFailed();
+error Raffle__RaffleNotOpened();
 
 /**
  * @title raffle contract
@@ -9,24 +12,59 @@ error Raffle_NotEnoughETHEntered();
  * @notice creates a raffle
  */
 contract Raffle {
+    enum RaffleState {
+        OPEN,
+        CALCULATING
+    }
+
     uint256 private immutable iEntranceFee;
+    uint256 private immutable iInterval; //duration in seconds
+    uint256 private sLastTimeStamp;
     address payable[] private sPlayers;
+    RaffleState private sRaffleState;
 
     event RaffleEntered(address indexed player);
 
-    constructor(uint256 entranceFee) {
+    constructor(uint256 entranceFee, uint256 interval) {
         iEntranceFee = entranceFee;
+        iInterval = interval;
+        sLastTimeStamp = block.timestamp;
+        sRaffleState = RaffleState.OPEN;
     }
 
-    function enterRaffle() public payable {
+    function enterRaffle() external payable {
         if (msg.value < iEntranceFee) {
-            revert Raffle_NotEnoughETHEntered();
+            revert Raffle__NotEnoughETHEntered();
+        }
+        if (sRaffleState != RaffleState.OPEN) {
+            revert Raffle__RaffleNotOpened();
         }
         sPlayers.push(payable(msg.sender));
         emit RaffleEntered(msg.sender);
     }
 
-    function getEntranceFee() public view returns (uint256) {
+    function pickWinner() external {
+        if((block.timestamp - sLastTimeStamp) < iInterval) {
+            revert Raffle__NoteTimeToPickWinner();
+        }
+        if (sRaffleState != RaffleState.OPEN) {
+            revert Raffle__RaffleNotOpened();
+        }
+
+        sRaffleState = RaffleState.CALCULATING;
+        uint256 randomNumber = 2; // for testing purposes, else use chainlink VRF
+        uint256 winnerIndex = randomNumber % sPlayers.length;
+        address payable winner = sPlayers[winnerIndex];
+        (bool success, ) = winner.call{value: address(this).balance}("");
+        if (!success) {
+            revert Raffle__TransferFailed();
+        }
+        sPlayers = new address payable[](0);
+        sLastTimeStamp = block.timestamp;
+        sRaffleState = RaffleState.OPEN;
+    }
+
+    function getEntranceFee() external view returns (uint256) {
         return iEntranceFee;
     }
 }
