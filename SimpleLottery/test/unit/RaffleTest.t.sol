@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import {Raffle, Raffle__NotEnoughETHEntered, Raffle__RaffleNotOpened} from "src/Raffle.sol";
+import {Raffle, Raffle__NotEnoughETHEntered, Raffle__RaffleNotOpened, Raffle__NoteTimeToPickWinner} from "src/Raffle.sol";
 import {Test} from "forge-std/Test.sol";
 import {DeployRaffle} from "script/DeployRaffle.s.sol";
 
@@ -37,5 +37,26 @@ contract RaffleTest is Test {
         vm.deal(address(1), lowerEntranceFee);
         vm.expectRevert(Raffle__NotEnoughETHEntered.selector);
         raffle.enterRaffle{value: lowerEntranceFee}();
+    }
+
+    function testPickWinnerNotTime() public {
+        vm.prank(player);
+        raffle.enterRaffle{value: entranceFee}();
+
+        vm.expectRevert(Raffle__NoteTimeToPickWinner.selector);
+        raffle.pickWinner();
+    }
+
+    function testPickWinner() public {
+        vm.prank(player);
+        raffle.enterRaffle{value: entranceFee}();
+        uint256 playerStartingBalance = player.balance;
+
+        vm.warp(block.timestamp + 31);
+        raffle.pickWinner();
+
+        assertEq(raffle.getNumberOfPlayers(), 0);
+        assertEq(uint256(raffle.getRaffleState()), uint256(Raffle.RaffleState.OPEN));
+        assertEq(player.balance, playerStartingBalance + entranceFee);
     }
 }
