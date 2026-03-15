@@ -1,18 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import {Raffle, Raffle__NotEnoughETHEntered} from "src/Raffle.sol";
+import {Raffle, Raffle__NotEnoughETHEntered, Raffle__RaffleNotOpened} from "src/Raffle.sol";
 import {Test} from "forge-std/Test.sol";
 import {DeployRaffle} from "script/DeployRaffle.s.sol";
+
 
 contract RaffleTest is Test {
     Raffle raffle;
     uint256 entranceFee = 0.1 ether;
     uint256 lowerEntranceFee = 0.01 ether;
+    address player = address(1);
 
     function setUp() public {
         DeployRaffle deployer = new DeployRaffle();
         raffle = deployer.run(entranceFee, 30);
+        vm.deal(player, entranceFee);
     }
 
     function testInitialState() public view {
@@ -22,11 +25,11 @@ contract RaffleTest is Test {
     }
 
     function testEnterRaffle() public {
-        vm.prank(address(1));
-        vm.deal(address(1), entranceFee);
+        vm.prank(player);
         raffle.enterRaffle{value: entranceFee}();
+
         assertEq(raffle.getNumberOfPlayers(), 1);
-        assertEq(raffle.getPlayer(0), address(1));
+        assertEq(raffle.getPlayer(0), player);
     }
 
     function testEnterRaffleNotEnoughETH() public {
