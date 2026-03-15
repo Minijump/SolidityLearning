@@ -45,6 +45,7 @@ contract Raffle {
     }
 
     // CEI: Checks, Effects, Interactions
+    // For an automated picking, user chainlink (checkUpkee and performUpkeep)
     function pickWinner() external {
         if((block.timestamp - sLastTimeStamp) < iInterval) {
             revert Raffle__NoteTimeToPickWinner();
