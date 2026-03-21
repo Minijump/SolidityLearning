@@ -3,6 +3,8 @@ a repo where I add all the small code I did to learn a bit of solidity
 
 [Cyfrin] = project comes from https://updraft.cyfrin.io/
 
+[Speedrun] = project comes from https://speedrunethereum.com/
+
 [Me] = personal project to gather what I learned until that moment
 
 [Remix] = project was done on remix
