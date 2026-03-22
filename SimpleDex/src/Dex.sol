@@ -4,38 +4,30 @@ pragma solidity 0.8.20;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract DEX {
-    /////////////////
-    /// Errors //////
-    /////////////////
-
-    // Errors go here
-
-    //////////////////////
-    /// State Variables //
-    //////////////////////
+    error DexAlreadyInitialized();
+    error TokenTransferFailed();
 
     IERC20 public immutable TOKEN;
 
-    ////////////////
-    /// Events /////
-    ////////////////
-
-    // Events go here...
-
-    ///////////////////
-    /// Constructor ///
-    ///////////////////
+    uint256 public totalLiquidity;
+    mapping(address => uint256) public liquidity;
 
     constructor(address tokenAddr) {
         TOKEN = IERC20(tokenAddr);
     }
 
-    ///////////////////
-    /// Functions /////
-    ///////////////////
-
     function init(uint256 tokens) public payable returns (uint256 initialLiquidity) {
-        // Your code here...
+        // TODO: check balance?
+        if (totalLiquidity > 0) {
+            revert DexAlreadyInitialized();
+        }
+
+        initialLiquidity = address(this).balance;
+        liquidity[msg.sender] = initialLiquidity;
+        totalLiquidity = initialLiquidity;
+
+        if (!TOKEN.transferFrom(msg.sender, address(this), tokens)) revert TokenTransferFailed();
+        return initialLiquidity;
     }
 
     function price(uint256 xInput, uint256 xReserves, uint256 yReserves) public pure returns (uint256 yOutput) {
@@ -43,7 +35,7 @@ contract DEX {
     }
 
     function getLiquidity(address lp) public view returns (uint256 lpLiquidity) {
-        // Your code here...
+        return liquidity[lp];
     }
 
     function ethToToken() public payable returns (uint256 tokenOutput) {
