@@ -81,20 +81,20 @@ contract DEX {
     function deposit() public payable returns (uint256 tokensDeposited) {
         if (msg.value == 0) revert InvalidEthAmount();
         uint256 ethReserve = address(this).balance - msg.value;
-        uint256 tokenReserve = token.balanceOf(address(this));
+        uint256 tokenReserve = TOKEN.balanceOf(address(this));
 
         uint256 tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
 
-        uint256 bal = token.balanceOf(msg.sender);
+        uint256 bal = TOKEN.balanceOf(msg.sender);
         if (bal < tokenDeposit) revert InsufficientTokenBalance(bal, tokenDeposit);
-        uint256 allow = token.allowance(msg.sender, address(this));
+        uint256 allow = TOKEN.allowance(msg.sender, address(this));
         if (allow < tokenDeposit) revert InsufficientTokenAllowance(allow, tokenDeposit);
 
         uint256 liquidityMinted = msg.value * totalLiquidity / ethReserve;
         liquidity[msg.sender] += liquidityMinted;
         totalLiquidity += liquidityMinted;
 
-        if (!token.transferFrom(msg.sender, address(this), tokenDeposit)) revert TokenTransferFailed();
+        if (!TOKEN.transferFrom(msg.sender, address(this), tokenDeposit)) revert TokenTransferFailed();
         emit LiquidityProvided(msg.sender, liquidityMinted, msg.value, tokenDeposit);
         return tokenDeposit;
     }
@@ -103,7 +103,7 @@ contract DEX {
         uint256 availableLp = liquidity[msg.sender];
         if (availableLp < amount) revert InsufficientLiquidity(availableLp, amount);
             uint256 ethReserve = address(this).balance;
-            uint256 tokenReserve = token.balanceOf(address(this));
+            uint256 tokenReserve = TOKEN.balanceOf(address(this));
 
         uint256 ethWithdrawn = amount * ethReserve / totalLiquidity;
         uint256 tokensWithdrawn = amount * tokenReserve / totalLiquidity;
@@ -113,7 +113,7 @@ contract DEX {
 
             (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
         if (!sent) revert EthTransferFailed(msg.sender, ethWithdrawn);
-        if (!token.transfer(msg.sender, tokensWithdrawn)) revert TokenTransferFailed();
+        if (!TOKEN.transfer(msg.sender, tokensWithdrawn)) revert TokenTransferFailed();
 
         emit LiquidityRemoved(msg.sender, amount, tokensWithdrawn, ethWithdrawn);
         return (ethWithdrawn, tokensWithdrawn);
