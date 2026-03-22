@@ -10,3 +10,6 @@
 [submodule "SimpleDex/lib/forge-std"]
 	path = SimpleDex/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "SimpleDex/lib/openzeppelin-contracts"]
+	path = SimpleDex/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts

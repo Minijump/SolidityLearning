@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20; //Do not change the solidity version as it negatively impacts submission grading
+pragma solidity 0.8.20;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract DEX {
     /////////////////
@@ -14,7 +14,7 @@ contract DEX {
     /// State Variables //
     //////////////////////
 
-    IERC20 public immutable token;
+    IERC20 public immutable TOKEN;
 
     ////////////////
     /// Events /////
@@ -27,7 +27,7 @@ contract DEX {
     ///////////////////
 
     constructor(address tokenAddr) {
-        token = IERC20(tokenAddr);
+        TOKEN = IERC20(tokenAddr);
     }
 
     ///////////////////
