@@ -11,26 +11,32 @@ a repo where I add all the small code I did to learn a bit of solidity
 
 [Foundry] = project was runned with foundry
 
-### Simple storage [Cyfrin][Remix]
+[Remix]
+### Simple storage [Cyfrin]
 Allows storing variable/constants with differents data stuctures.
 
-### Storage factory [Cyfrin][Remix]
+### Storage factory [Cyfrin]
 Allows creating simple storage contract from a smart contract
 
-### Fund me [Cyfrin][Remix]
+### Fund me [Cyfrin]
 Small fake crowdfunding project. (simplified compared to cyfrin course, removed the oracle)
 
-### MiniDao [Me][Remix]
+### MiniDao [Me]
 The creation of a mini dao smart contract enabling voting, seeing votes, ...
 
-### Foundry Simple storage [Cyfrin][Foundry]
+[Foundry]
+### Foundry Simple storage [Cyfrin]
 The scope of this project is the same as Simple storage but this time we will use foundry to run it.
 
-### Foundry Fund me [Cyfrin][Foundry]
+### Foundry Fund me [Cyfrin]
 Same as FundMe but used foundry to run it
 
-### SimpleLottery [Cyfrin][Foundry]
+### SimpleLottery [Cyfrin]
 Name is explicit, a lottery system ruled by smart contracts.
+
+### SimpleDex [Speedrun]
+https://github.com/scaffold-eth/se-2-challenges/tree/challenge-dex
+Create a dex that enables "balloons" swap with Eth; the project is based on speedrun ethereum but will be done with foundry and without the frontend.
 
 
 
