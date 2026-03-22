@@ -11,6 +11,7 @@ contract DEX {
     error InsufficientTokenBalance(uint256 available, uint256 required);
     error InsufficientTokenAllowance(uint256 available, uint256 required);
     error EthTransferFailed(address to, uint256 amount);
+    error InsufficientLiquidity(uint256 available, uint256 required); 
 
     IERC20 public immutable TOKEN;
 
@@ -19,6 +20,8 @@ contract DEX {
 
     event EthToTokenSwap(address swapper, uint256 tokenOutput, uint256 ethInput);
     event TokenToEthSwap(address swapper, uint256 tokensInput, uint256 ethOutput);
+    event LiquidityProvided(address liquidityProvider, uint256 liquidityMinted, uint256 ethInput, uint256 tokensInput);
+    event LiquidityRemoved(address liquidityRemover, uint256 liquidityWithdrawn, uint256 tokensOutput, uint256 ethOutput);
 
     constructor(address tokenAddr) {
         TOKEN = IERC20(tokenAddr);
@@ -76,10 +79,43 @@ contract DEX {
     }
 
     function deposit() public payable returns (uint256 tokensDeposited) {
-        // Your code here...
+        if (msg.value == 0) revert InvalidEthAmount();
+        uint256 ethReserve = address(this).balance - msg.value;
+        uint256 tokenReserve = token.balanceOf(address(this));
+
+        uint256 tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
+
+        uint256 bal = token.balanceOf(msg.sender);
+        if (bal < tokenDeposit) revert InsufficientTokenBalance(bal, tokenDeposit);
+        uint256 allow = token.allowance(msg.sender, address(this));
+        if (allow < tokenDeposit) revert InsufficientTokenAllowance(allow, tokenDeposit);
+
+        uint256 liquidityMinted = msg.value * totalLiquidity / ethReserve;
+        liquidity[msg.sender] += liquidityMinted;
+        totalLiquidity += liquidityMinted;
+
+        if (!token.transferFrom(msg.sender, address(this), tokenDeposit)) revert TokenTransferFailed();
+        emit LiquidityProvided(msg.sender, liquidityMinted, msg.value, tokenDeposit);
+        return tokenDeposit;
     }
 
     function withdraw(uint256 amount) public returns (uint256 ethAmount, uint256 tokenAmount) {
-        // Your code here...
+        uint256 availableLp = liquidity[msg.sender];
+        if (availableLp < amount) revert InsufficientLiquidity(availableLp, amount);
+            uint256 ethReserve = address(this).balance;
+            uint256 tokenReserve = token.balanceOf(address(this));
+
+        uint256 ethWithdrawn = amount * ethReserve / totalLiquidity;
+        uint256 tokensWithdrawn = amount * tokenReserve / totalLiquidity;
+
+            liquidity[msg.sender] -= amount;
+            totalLiquidity -= amount;
+
+            (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
+        if (!sent) revert EthTransferFailed(msg.sender, ethWithdrawn);
+        if (!token.transfer(msg.sender, tokensWithdrawn)) revert TokenTransferFailed();
+
+        emit LiquidityRemoved(msg.sender, amount, tokensWithdrawn, ethWithdrawn);
+        return (ethWithdrawn, tokensWithdrawn);
     }
 }
