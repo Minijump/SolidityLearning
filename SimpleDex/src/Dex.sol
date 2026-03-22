@@ -6,11 +6,19 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract DEX {
     error DexAlreadyInitialized();
     error TokenTransferFailed();
+    error InvalidEthAmount();
+    error InvalidTokenAmount();
+    error InsufficientTokenBalance(uint256 available, uint256 required);
+    error InsufficientTokenAllowance(uint256 available, uint256 required);
+    error EthTransferFailed(address to, uint256 amount);
 
     IERC20 public immutable TOKEN;
 
     uint256 public totalLiquidity;
     mapping(address => uint256) public liquidity;
+
+    event EthToTokenSwap(address swapper, uint256 tokenOutput, uint256 ethInput);
+    event TokenToEthSwap(address swapper, uint256 tokensInput, uint256 ethOutput);
 
     constructor(address tokenAddr) {
         TOKEN = IERC20(tokenAddr);
@@ -42,11 +50,29 @@ contract DEX {
     }
 
     function ethToToken() public payable returns (uint256 tokenOutput) {
-        // Your code here...
+        if (msg.value == 0) revert InvalidEthAmount();
+        uint256 ethReserve = address(this).balance - msg.value;
+        uint256 tokenReserve = TOKEN.balanceOf(address(this));
+        tokenOutput = price(msg.value, ethReserve, tokenReserve);
+
+        if (!TOKEN.transfer(msg.sender, tokenOutput)) revert TokenTransferFailed();
+        emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
+        return tokenOutput;
     }
 
     function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
-        // Your code here...
+        if (tokenInput == 0) revert InvalidTokenAmount();
+        uint256 bal = TOKEN.balanceOf(msg.sender);
+        if (bal < tokenInput) revert InsufficientTokenBalance(bal, tokenInput);
+        uint256 allow = TOKEN.allowance(msg.sender, address(this));
+        if (allow < tokenInput) revert InsufficientTokenAllowance(allow, tokenInput);
+        uint256 tokenReserve = TOKEN.balanceOf(address(this));
+        ethOutput = price(tokenInput, tokenReserve, address(this).balance);
+        if (!TOKEN.transferFrom(msg.sender, address(this), tokenInput)) revert TokenTransferFailed();
+        (bool sent, ) = msg.sender.call{ value: ethOutput }("");
+        if (!sent) revert EthTransferFailed(msg.sender, ethOutput);
+        emit TokenToEthSwap(msg.sender, tokenInput, ethOutput);
+        return ethOutput;
     }
 
     function deposit() public payable returns (uint256 tokensDeposited) {
