@@ -14,9 +14,8 @@ contract DEXTest is Test {
 
     function setUp() external {
         DeployBalloonsDEX deployer = new DeployBalloonsDEX();
-        dex = deployer.run(address(this));
+        (dex, balloons) = deployer.run(address(this));
 
-        balloons = Balloons(address(dex.TOKEN()));
         balloons.transfer(USER, 100 ether);
         vm.startPrank(USER);
         balloons.approve(address(dex), 100 ether);
