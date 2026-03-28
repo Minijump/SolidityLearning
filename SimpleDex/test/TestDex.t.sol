@@ -144,7 +144,29 @@ contract DEXTest is Test {
         vm.stopPrank();
     }
 
-    // TODOs
-    // test ethToToken
-    // test tokenToEth
+    function testEthToToken() external {
+        _initializeDex();
+        uint256 tokenBalanceBefore = balloons.balanceOf(USER);
+        uint256 ethBalanceBefore = address(USER).balance;
+
+        vm.startPrank(USER);
+        uint256 tokensReceived = dex.ethToToken{value: 10 ether}();
+        vm.stopPrank();
+
+        assertEq(balloons.balanceOf(USER), tokenBalanceBefore + tokensReceived);
+        assertEq(address(USER).balance, ethBalanceBefore - 10 ether);
+    }
+
+    function testTokenToEth() external {
+        _initializeDex();
+        uint256 tokenBalanceBefore = balloons.balanceOf(USER);
+        uint256 ethBalanceBefore = address(USER).balance;
+
+        vm.startPrank(USER);
+        uint256 ethReceived = dex.tokenToEth(10 ether);
+        vm.stopPrank();
+
+        assertEq(balloons.balanceOf(USER), tokenBalanceBefore - 10 ether);
+        assertEq(address(USER).balance, ethBalanceBefore + ethReceived);
+    }
 }
