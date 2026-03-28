@@ -6,6 +6,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract DEX {
     error DexAlreadyInitialized();
     error TokenTransferFailed();
+    error AmountTokenEthMismatch(uint256 providedToken, uint256 providedEth);
     error InvalidEthAmount();
     error InvalidTokenAmount();
     error InsufficientTokenBalance(uint256 available, uint256 required);
@@ -28,7 +29,9 @@ contract DEX {
     }
 
     function init(uint256 tokens) public payable returns (uint256 initialLiquidity) {
-        // TODO: check balance?
+        if (tokens != msg.value) {
+            revert AmountTokenEthMismatch(tokens, msg.value);
+        }
         if (totalLiquidity > 0) {
             revert DexAlreadyInitialized();
         }
