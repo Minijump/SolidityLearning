@@ -7,8 +7,12 @@ import {Balloons} from "../src/Balloons.sol";
 
 contract DeployBalloonsDEX is Script {
     function run() external returns (DEX) {
+        return run(msg.sender);
+    }
+
+    function run(address owner) public returns (DEX) {
         vm.startBroadcast();
-        Balloons newBalloons = new Balloons();
+        Balloons newBalloons = new Balloons(owner);
         DEX newDex = new DEX(address(newBalloons));
         vm.stopBroadcast();
         return newDex;
