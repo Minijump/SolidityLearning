@@ -105,8 +105,8 @@ contract DEX {
     function withdraw(uint256 amount) public returns (uint256 ethAmount, uint256 tokenAmount) {
         uint256 availableLp = liquidity[msg.sender];
         if (availableLp < amount) revert InsufficientLiquidity(availableLp, amount);
-            uint256 ethReserve = address(this).balance;
-            uint256 tokenReserve = TOKEN.balanceOf(address(this));
+        uint256 ethReserve = address(this).balance;
+        uint256 tokenReserve = TOKEN.balanceOf(address(this));
 
         uint256 ethWithdrawn = amount * ethReserve / totalLiquidity;
         uint256 tokensWithdrawn = amount * tokenReserve / totalLiquidity;

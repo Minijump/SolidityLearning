@@ -118,4 +118,33 @@ contract DEXTest is Test {
         dex.deposit{value: 1}();
         vm.stopPrank();
     }
+
+    function testWithdraw() external {
+        _initializeDex();
+        uint256 liquidityBefore = dex.getLiquidity(INITIALIZER);
+        uint256 tokenBalanceBefore = balloons.balanceOf(INITIALIZER);
+        uint256 ethBalanceBefore = address(INITIALIZER).balance;
+
+        vm.startPrank(INITIALIZER);
+        (uint256 ethWithdrawn, uint256 tokensWithdrawn) = dex.withdraw(10 ether);
+        vm.stopPrank();
+
+        uint256 liquidityAfter = dex.getLiquidity(INITIALIZER);
+        assertEq(liquidityAfter, liquidityBefore - 10 ether);
+        assertEq(address(INITIALIZER).balance, ethBalanceBefore + ethWithdrawn);
+        assertEq(balloons.balanceOf(INITIALIZER), tokenBalanceBefore + tokensWithdrawn);
+    }
+
+    function testWithdrawNotEnoughLiquidity() external {
+        _initializeDex();
+
+        vm.startPrank(USER);
+        vm.expectRevert();
+        dex.withdraw(1 ether);
+        vm.stopPrank();
+    }
+
+    // TODOs
+    // test ethToToken
+    // test tokenToEth
 }
