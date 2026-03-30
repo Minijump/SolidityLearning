@@ -59,9 +59,10 @@ contract DEX {
         if (msg.value == 0) revert InvalidEthAmount();
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 tokenReserve = TOKEN.balanceOf(address(this));
-        tokenOutput = price(msg.value, ethReserve, tokenReserve);
 
+        tokenOutput = price(msg.value, ethReserve, tokenReserve);
         if (!TOKEN.transfer(msg.sender, tokenOutput)) revert TokenTransferFailed();
+
         emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
         return tokenOutput;
     }
@@ -73,9 +74,11 @@ contract DEX {
         uint256 allow = TOKEN.allowance(msg.sender, address(this));
         if (allow < tokenInput) revert InsufficientTokenAllowance(allow, tokenInput);
         uint256 tokenReserve = TOKEN.balanceOf(address(this));
+
         ethOutput = price(tokenInput, tokenReserve, address(this).balance);
         if (!TOKEN.transferFrom(msg.sender, address(this), tokenInput)) revert TokenTransferFailed();
         (bool sent, ) = msg.sender.call{ value: ethOutput }("");
+
         if (!sent) revert EthTransferFailed(msg.sender, ethOutput);
         emit TokenToEthSwap(msg.sender, tokenInput, ethOutput);
         return ethOutput;
@@ -85,9 +88,7 @@ contract DEX {
         if (msg.value == 0) revert InvalidEthAmount();
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 tokenReserve = TOKEN.balanceOf(address(this));
-
         uint256 tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
-
         uint256 bal = TOKEN.balanceOf(msg.sender);
         if (bal < tokenDeposit) revert InsufficientTokenBalance(bal, tokenDeposit);
         uint256 allow = TOKEN.allowance(msg.sender, address(this));
@@ -107,14 +108,12 @@ contract DEX {
         if (availableLp < amount) revert InsufficientLiquidity(availableLp, amount);
         uint256 ethReserve = address(this).balance;
         uint256 tokenReserve = TOKEN.balanceOf(address(this));
-
         uint256 ethWithdrawn = amount * ethReserve / totalLiquidity;
         uint256 tokensWithdrawn = amount * tokenReserve / totalLiquidity;
 
-            liquidity[msg.sender] -= amount;
-            totalLiquidity -= amount;
-
-            (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
+        liquidity[msg.sender] -= amount;
+        totalLiquidity -= amount;
+        (bool sent, ) = payable(msg.sender).call{ value: ethWithdrawn }("");
         if (!sent) revert EthTransferFailed(msg.sender, ethWithdrawn);
         if (!TOKEN.transfer(msg.sender, tokensWithdrawn)) revert TokenTransferFailed();
 

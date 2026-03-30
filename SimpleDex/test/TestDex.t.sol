@@ -148,25 +148,89 @@ contract DEXTest is Test {
         _initializeDex();
         uint256 tokenBalanceBefore = balloons.balanceOf(USER);
         uint256 ethBalanceBefore = address(USER).balance;
+        uint256 ethReserve = address(dex).balance;
+        uint256 tokenReserve = balloons.balanceOf(address(dex));
+        uint256 expectedTokens = dex.price(10 ether, ethReserve, tokenReserve);
 
         vm.startPrank(USER);
         uint256 tokensReceived = dex.ethToToken{value: 10 ether}();
         vm.stopPrank();
 
+        assertEq(tokensReceived, expectedTokens);
         assertEq(balloons.balanceOf(USER), tokenBalanceBefore + tokensReceived);
         assertEq(address(USER).balance, ethBalanceBefore - 10 ether);
+    }
+
+    function testEthToTokenEmptyMessageValue() external {
+        _initializeDex();
+
+        vm.startPrank(USER);
+        vm.expectRevert();
+        dex.ethToToken{value: 0}();
+        vm.stopPrank();
     }
 
     function testTokenToEth() external {
         _initializeDex();
         uint256 tokenBalanceBefore = balloons.balanceOf(USER);
         uint256 ethBalanceBefore = address(USER).balance;
+        uint256 tokenReserve = balloons.balanceOf(address(dex));
+        uint256 ethReserve = address(dex).balance;
+        uint256 expectedEth = dex.price(10 ether, tokenReserve, ethReserve);
 
         vm.startPrank(USER);
         uint256 ethReceived = dex.tokenToEth(10 ether);
         vm.stopPrank();
 
+        assertEq(ethReceived, expectedEth);
         assertEq(balloons.balanceOf(USER), tokenBalanceBefore - 10 ether);
         assertEq(address(USER).balance, ethBalanceBefore + ethReceived);
+    }
+
+    function testTokenToEthNoTokenInMessage() external {
+        _initializeDex();
+
+        vm.startPrank(USER);
+        vm.expectRevert();
+        dex.tokenToEth(0);
+        vm.stopPrank();
+    }
+
+    function testTokenToEthNotEnoughBalance() external {
+        _initializeDex();
+        address userWithNoTokens = makeAddr("userWithNoTokens");
+        vm.deal(userWithNoTokens, 10000 ether);
+        vm.startPrank(userWithNoTokens);
+        balloons.approve(address(dex), 100 ether);
+        vm.stopPrank();
+
+        vm.startPrank(userWithNoTokens);
+        vm.expectRevert();
+        dex.tokenToEth(1);
+        vm.stopPrank();
+    }
+
+    function testTokenToEthNotEnoughAllowance() external {
+        _initializeDex();
+        address userWithNoAllowance = makeAddr("userWithNoAllowance");
+        vm.deal(userWithNoAllowance, 10000 ether);
+        balloons.transfer(userWithNoAllowance, 100 ether);
+
+        vm.startPrank(userWithNoAllowance);
+        vm.expectRevert();
+        dex.tokenToEth(1);
+        vm.stopPrank();
+    }
+
+    function testPrice() external view{
+        uint256 ethReserve = 100 ether;
+        uint256 tokenReserve = 200 ether;
+        uint256 inputAmount = 10 ether;
+        uint256 inputAmountWithFee = inputAmount * 997; // accounting for 0.3% fee
+        uint256 expectedOutput = (inputAmountWithFee * tokenReserve) / ((ethReserve*1000) + inputAmountWithFee);
+        
+        uint256 actualOutput = dex.price(inputAmount, ethReserve, tokenReserve);
+
+        assertEq(actualOutput, expectedOutput);
     }
 }
