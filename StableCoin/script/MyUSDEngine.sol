@@ -77,7 +77,8 @@ contract MyUSDEngine is Ownable {
     }
 
     function calculateCollateralValue(address user) public view returns (uint256) {
-        
+        uint256 collateralAmount = s_userCollateral[user];
+        return (collateralAmount * i_oracle.getETHMyUSDPrice()) / PRECISION;
     }
 
     // Checkpoint 3: Interest Calculation System
