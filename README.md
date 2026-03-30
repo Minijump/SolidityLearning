@@ -38,6 +38,11 @@ Name is explicit, a lottery system ruled by smart contracts.
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-dex
 Create a dex that enables "balloons" swap with Eth; the project is based on speedrun ethereum but will be done with foundry and without the frontend.
 
+### StableCoin [Speedrun]
+https://github.com/scaffold-eth/se-2-challenges/tree/challenge-stablecoins
+Create a decentralized stable coin; the project is based on speedrun ethereum but will be done with foundry and without the frontend.
+TODO: look at project code, unit test it, ...
+
 
 # Cheatsheet
 Create a new project with: forge init (--use-parent-git)
