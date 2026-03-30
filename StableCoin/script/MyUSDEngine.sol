@@ -69,9 +69,11 @@ contract MyUSDEngine is Ownable {
         debtExchangeRate = PRECISION; // 1:1 initially
     }
 
-    // Checkpoint 2: Depositing Collateral & Understanding Value
     function addCollateral() public payable {
-        
+        if (msg.value == 0) revert Engine__InvalidAmount();
+
+        s_userCollateral[msg.sender] += msg.value;
+        emit CollateralAdded(msg.sender, msg.value, i_oracle.getETHMyUSDPrice());
     }
 
     function calculateCollateralValue(address user) public view returns (uint256) {
