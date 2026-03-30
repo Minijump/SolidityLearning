@@ -12,6 +12,8 @@ contract DEXTest is Test {
     Balloons balloons;
     address INITIALIZER = makeAddr("initializer");
     address USER = makeAddr("user");
+    address USERWITHNOTOKENS = makeAddr("userWithNoTokens");
+    address USERWITHNOTALLOWANCE = makeAddr("userWithNoAllowance");
 
     function setUp() external {
         DeployBalloonsDEX deployer = new DeployBalloonsDEX();
@@ -19,6 +21,7 @@ contract DEXTest is Test {
 
         balloons.transfer(INITIALIZER, 100 ether);
         balloons.transfer(USER, 100 ether);
+        balloons.transfer(USERWITHNOTALLOWANCE, 100 ether);
 
         vm.startPrank(INITIALIZER);
         balloons.approve(address(dex), 100 ether);
@@ -26,9 +29,14 @@ contract DEXTest is Test {
         vm.startPrank(USER);
         balloons.approve(address(dex), 100 ether);
         vm.stopPrank();
+        vm.startPrank(USERWITHNOTOKENS);
+        balloons.approve(address(dex), 100 ether);
+        vm.stopPrank();
 
         vm.deal(INITIALIZER, 10000 ether);
         vm.deal(USER, 10000 ether);
+        vm.deal(USERWITHNOTOKENS, 10000 ether);
+        vm.deal(USERWITHNOTALLOWANCE, 10000 ether);
     }
 
     function testInit() external {
@@ -95,13 +103,8 @@ contract DEXTest is Test {
 
     function testDepositNotEnoughTokens() external {
         _initializeDex();
-        address userWithNoTokens = makeAddr("userWithNoTokens");
-        vm.deal(userWithNoTokens, 10000 ether);
-        vm.startPrank(userWithNoTokens);
-        balloons.approve(address(dex), 100 ether);
-        vm.stopPrank();
 
-        vm.startPrank(userWithNoTokens);
+        vm.startPrank(USERWITHNOTOKENS);
         vm.expectRevert();
         dex.deposit{value: 1}();
         vm.stopPrank();
@@ -109,11 +112,8 @@ contract DEXTest is Test {
 
     function testDepositNotEnoughAllowance() external {
         _initializeDex();
-        address userWithNoAllowance = makeAddr("userWithNoAllowance");
-        vm.deal(userWithNoAllowance, 10000 ether);
-        balloons.transfer(userWithNoAllowance, 100 ether);
 
-        vm.startPrank(userWithNoAllowance);
+        vm.startPrank(USERWITHNOTALLOWANCE);
         vm.expectRevert();
         dex.deposit{value: 1}();
         vm.stopPrank();
@@ -198,13 +198,8 @@ contract DEXTest is Test {
 
     function testTokenToEthNotEnoughBalance() external {
         _initializeDex();
-        address userWithNoTokens = makeAddr("userWithNoTokens");
-        vm.deal(userWithNoTokens, 10000 ether);
-        vm.startPrank(userWithNoTokens);
-        balloons.approve(address(dex), 100 ether);
-        vm.stopPrank();
 
-        vm.startPrank(userWithNoTokens);
+        vm.startPrank(USERWITHNOTOKENS);
         vm.expectRevert();
         dex.tokenToEth(1);
         vm.stopPrank();
@@ -212,11 +207,8 @@ contract DEXTest is Test {
 
     function testTokenToEthNotEnoughAllowance() external {
         _initializeDex();
-        address userWithNoAllowance = makeAddr("userWithNoAllowance");
-        vm.deal(userWithNoAllowance, 10000 ether);
-        balloons.transfer(userWithNoAllowance, 100 ether);
 
-        vm.startPrank(userWithNoAllowance);
+        vm.startPrank(USERWITHNOTALLOWANCE);
         vm.expectRevert();
         dex.tokenToEth(1);
         vm.stopPrank();
