@@ -142,9 +142,10 @@ contract MyUSDEngine is Ownable {
         emit DebtSharesMinted(msg.sender, mintAmount, shares);
     }
 
-    // Checkpoint 5: Accruing Interest & Managing Borrow Rates
     function setBorrowRate(uint256 newRate) external onlyRateController {
-        
+        _accrueInterest();
+        borrowRate = newRate;
+        emit BorrowRateUpdated(newRate);
     }
 
     // Checkpoint 6: Repaying Debt & Withdrawing Collateral
