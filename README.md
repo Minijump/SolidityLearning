@@ -36,8 +36,7 @@ Name is explicit, a lottery system ruled by smart contracts.
 
 ### SimpleDex [Speedrun]
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-dex
-Create a dex that enables "balloons" swap with Eth; the project is based on speedrun ethereum but will be done with foundry and without the frontend. #TODO imp code design/readability and imp unit test when needed
-
+Create a dex that enables "balloons" swap with Eth; the project is based on speedrun ethereum but will be done with foundry and without the frontend.
 
 
 # Cheatsheet

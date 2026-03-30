@@ -15,57 +15,62 @@ contract DEXTest is Test {
     address USERWITHNOTOKENS = makeAddr("userWithNoTokens");
     address USERWITHNOTALLOWANCE = makeAddr("userWithNoAllowance");
 
+    uint256 constant ACTION_AMOUNT = 1 ether;
+    uint256 constant INIT_BALANCE_AMOUNT = 100 ether;
+
     function setUp() external {
         DeployBalloonsDEX deployer = new DeployBalloonsDEX();
         (dex, balloons) = deployer.run(address(this));
 
-        balloons.transfer(INITIALIZER, 100 ether);
-        balloons.transfer(USER, 100 ether);
-        balloons.transfer(USERWITHNOTALLOWANCE, 100 ether);
+        _initUser(INITIALIZER, INIT_BALANCE_AMOUNT, INIT_BALANCE_AMOUNT, INIT_BALANCE_AMOUNT);
+        _initUser(USER, INIT_BALANCE_AMOUNT, INIT_BALANCE_AMOUNT, INIT_BALANCE_AMOUNT);
+        _initUser(USERWITHNOTOKENS, 0, INIT_BALANCE_AMOUNT, INIT_BALANCE_AMOUNT);
+        _initUser(USERWITHNOTALLOWANCE, INIT_BALANCE_AMOUNT, 0, INIT_BALANCE_AMOUNT);
+    }
 
-        vm.startPrank(INITIALIZER);
-        balloons.approve(address(dex), 100 ether);
-        vm.stopPrank();
-        vm.startPrank(USER);
-        balloons.approve(address(dex), 100 ether);
-        vm.stopPrank();
-        vm.startPrank(USERWITHNOTOKENS);
-        balloons.approve(address(dex), 100 ether);
-        vm.stopPrank();
-
-        vm.deal(INITIALIZER, 10000 ether);
-        vm.deal(USER, 10000 ether);
-        vm.deal(USERWITHNOTOKENS, 10000 ether);
-        vm.deal(USERWITHNOTALLOWANCE, 10000 ether);
+    function _initUser(address user, uint256 balloonBalance, uint256 balloonAllowance, uint256 ethBalance) internal {
+        if (balloonBalance > 0) {
+            balloons.transfer(user, balloonBalance);
+        }
+        if (balloonAllowance > 0) {
+            vm.startPrank(user);
+            balloons.approve(address(dex), balloonAllowance);
+            vm.stopPrank();
+        }
+        if (ethBalance > 0) {
+            vm.deal(user, ethBalance);
+        }
     }
 
     function testInit() external {
         vm.startPrank(INITIALIZER);
-        uint256 initialLiquidity = dex.init{value: 100 ether}(100 ether);
+        uint256 initialLiquidity = dex.init{value: ACTION_AMOUNT}(ACTION_AMOUNT);
         vm.stopPrank();
 
-        assertEq(initialLiquidity, 100 ether);
-        assertEq(dex.totalLiquidity(), 100 ether);
-        assertEq(dex.getLiquidity(INITIALIZER), 100 ether);
+        assertEq(initialLiquidity, ACTION_AMOUNT);
+        assertEq(dex.totalLiquidity(), ACTION_AMOUNT);
+        assertEq(dex.getLiquidity(INITIALIZER), ACTION_AMOUNT);
     }
 
     function testInitNotEnoughTokens() external {
+        uint256 largeInitAmount = INIT_BALANCE_AMOUNT * 10;
+        vm.deal(INITIALIZER, largeInitAmount);
         vm.startPrank(INITIALIZER);
         vm.expectRevert();
-        dex.init{value: 1000 ether}(1000 ether);
+        dex.init{value: largeInitAmount}(largeInitAmount);
         vm.stopPrank();
     }
 
     function testTokenAmountMismatch() external {
         vm.startPrank(INITIALIZER);
-        vm.expectRevert();
-        dex.init{value: 0}(100 ether);
+        vm.expectRevert(abi.encodeWithSelector(DEX.AmountTokenEthMismatch.selector, ACTION_AMOUNT, 0));
+        dex.init{value: 0}(ACTION_AMOUNT);
         vm.stopPrank();
     }
 
     function _initializeDex() internal {
         vm.startPrank(INITIALIZER);
-        dex.init{value: 100 ether}(100 ether);
+        dex.init{value: ACTION_AMOUNT}(ACTION_AMOUNT);
         vm.stopPrank();
     }
 
@@ -73,8 +78,8 @@ contract DEXTest is Test {
         _initializeDex();
 
         vm.startPrank(USER);
-        vm.expectRevert();
-        dex.init{value: 100 ether}(100 ether);
+        vm.expectRevert(abi.encodeWithSelector(DEX.DexAlreadyInitialized.selector));
+        dex.init{value: ACTION_AMOUNT}(ACTION_AMOUNT);
         vm.stopPrank();
     }
 
@@ -83,20 +88,20 @@ contract DEXTest is Test {
         uint256 liquidityBeforeUser = dex.getLiquidity(USER);
 
         vm.startPrank(USER);
-        uint256 tokenDeposit = dex.deposit{value: 10 ether}();
+        uint256 tokenDeposit = dex.deposit{value: ACTION_AMOUNT}();
         vm.stopPrank();
 
         uint256 liquidityAfterUser = dex.getLiquidity(USER);
-        assertEq(liquidityAfterUser, liquidityBeforeUser + 10 ether);
-        assertEq(balloons.balanceOf(USER), 90 ether - 1); // -1 wei due to rounding in deposit
-        assertEq(tokenDeposit, 10 ether + 1); // deposit function adds +1 wei
+        assertEq(liquidityAfterUser, liquidityBeforeUser + ACTION_AMOUNT);
+        assertEq(balloons.balanceOf(USER), INIT_BALANCE_AMOUNT - ACTION_AMOUNT - 1); // -1 wei due to rounding in deposit
+        assertEq(tokenDeposit, ACTION_AMOUNT + 1); // deposit function adds +1 wei
     }
 
     function testDepositZeroEth() external {
         _initializeDex();
 
         vm.startPrank(USER);
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(DEX.InvalidEthAmount.selector));
         dex.deposit{value: 0}();
         vm.stopPrank();
     }
@@ -126,11 +131,11 @@ contract DEXTest is Test {
         uint256 ethBalanceBefore = address(INITIALIZER).balance;
 
         vm.startPrank(INITIALIZER);
-        (uint256 ethWithdrawn, uint256 tokensWithdrawn) = dex.withdraw(10 ether);
+        (uint256 ethWithdrawn, uint256 tokensWithdrawn) = dex.withdraw(ACTION_AMOUNT);
         vm.stopPrank();
 
         uint256 liquidityAfter = dex.getLiquidity(INITIALIZER);
-        assertEq(liquidityAfter, liquidityBefore - 10 ether);
+        assertEq(liquidityAfter, liquidityBefore - ACTION_AMOUNT);
         assertEq(address(INITIALIZER).balance, ethBalanceBefore + ethWithdrawn);
         assertEq(balloons.balanceOf(INITIALIZER), tokenBalanceBefore + tokensWithdrawn);
     }
@@ -139,7 +144,7 @@ contract DEXTest is Test {
         _initializeDex();
 
         vm.startPrank(USER);
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(DEX.InsufficientLiquidity.selector, 0, 1 ether));
         dex.withdraw(1 ether);
         vm.stopPrank();
     }
@@ -150,22 +155,22 @@ contract DEXTest is Test {
         uint256 ethBalanceBefore = address(USER).balance;
         uint256 ethReserve = address(dex).balance;
         uint256 tokenReserve = balloons.balanceOf(address(dex));
-        uint256 expectedTokens = dex.price(10 ether, ethReserve, tokenReserve);
+        uint256 expectedTokens = dex.price(ACTION_AMOUNT, ethReserve, tokenReserve);
 
         vm.startPrank(USER);
-        uint256 tokensReceived = dex.ethToToken{value: 10 ether}();
+        uint256 tokensReceived = dex.ethToToken{value: ACTION_AMOUNT}();
         vm.stopPrank();
 
         assertEq(tokensReceived, expectedTokens);
         assertEq(balloons.balanceOf(USER), tokenBalanceBefore + tokensReceived);
-        assertEq(address(USER).balance, ethBalanceBefore - 10 ether);
+        assertEq(address(USER).balance, ethBalanceBefore - ACTION_AMOUNT);
     }
 
     function testEthToTokenEmptyMessageValue() external {
         _initializeDex();
 
         vm.startPrank(USER);
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(DEX.InvalidEthAmount.selector));
         dex.ethToToken{value: 0}();
         vm.stopPrank();
     }
@@ -176,14 +181,14 @@ contract DEXTest is Test {
         uint256 ethBalanceBefore = address(USER).balance;
         uint256 tokenReserve = balloons.balanceOf(address(dex));
         uint256 ethReserve = address(dex).balance;
-        uint256 expectedEth = dex.price(10 ether, tokenReserve, ethReserve);
+        uint256 expectedEth = dex.price(ACTION_AMOUNT, tokenReserve, ethReserve);
 
         vm.startPrank(USER);
-        uint256 ethReceived = dex.tokenToEth(10 ether);
+        uint256 ethReceived = dex.tokenToEth(ACTION_AMOUNT);
         vm.stopPrank();
 
         assertEq(ethReceived, expectedEth);
-        assertEq(balloons.balanceOf(USER), tokenBalanceBefore - 10 ether);
+        assertEq(balloons.balanceOf(USER), tokenBalanceBefore - ACTION_AMOUNT);
         assertEq(address(USER).balance, ethBalanceBefore + ethReceived);
     }
 
@@ -191,7 +196,7 @@ contract DEXTest is Test {
         _initializeDex();
 
         vm.startPrank(USER);
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(DEX.InvalidTokenAmount.selector));
         dex.tokenToEth(0);
         vm.stopPrank();
     }
@@ -200,7 +205,7 @@ contract DEXTest is Test {
         _initializeDex();
 
         vm.startPrank(USERWITHNOTOKENS);
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(DEX.InsufficientTokenBalance.selector, 0, 1));
         dex.tokenToEth(1);
         vm.stopPrank();
     }
@@ -209,7 +214,7 @@ contract DEXTest is Test {
         _initializeDex();
 
         vm.startPrank(USERWITHNOTALLOWANCE);
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(DEX.InsufficientTokenAllowance.selector, 0, 1));
         dex.tokenToEth(1);
         vm.stopPrank();
     }
