@@ -108,21 +108,38 @@ contract MyUSDEngine is Ownable {
         return (amount * PRECISION) / currentExchangeRate;
     }
 
-    // Checkpoint 4: Minting MyUSD & Position Health
     function getCurrentDebtValue(address user) public view returns (uint256) {
-        
+        if (s_userDebtShares[user] == 0) return 0;
+        uint256 currentExchangeRate = _getCurrentExchangeRate();
+        return (s_userDebtShares[user] * currentExchangeRate) / PRECISION;
     }
 
     function calculatePositionRatio(address user) public view returns (uint256) {
-        
+        uint256 debtValue = getCurrentDebtValue(user);
+        if (debtValue == 0) return type(uint256).max;
+
+        uint256 collateralValue = calculateCollateralValue(user);
+        return (collateralValue * PRECISION) / debtValue;
     }
 
     function _validatePosition(address user) internal view {
-        
+        uint256 positionRatio = calculatePositionRatio(user);
+        if ((positionRatio * 100) < COLLATERAL_RATIO * PRECISION) {
+            revert Engine__UnsafePositionRatio();
+        }
     }
 
     function mintMyUSD(uint256 mintAmount) public {
-        
+        if (mintAmount == 0) revert Engine__InvalidAmount();
+
+        uint256 shares = _getMyUSDToShares(mintAmount);
+        s_userDebtShares[msg.sender] += shares;
+        totalDebtShares += shares;
+
+        _validatePosition(msg.sender);
+        i_myUSD.mintTo(msg.sender, mintAmount);
+
+        emit DebtSharesMinted(msg.sender, mintAmount, shares);
     }
 
     // Checkpoint 5: Accruing Interest & Managing Borrow Rates
