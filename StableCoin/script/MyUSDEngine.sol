@@ -195,12 +195,46 @@ contract MyUSDEngine is Ownable {
         emit CollateralWithdrawn(msg.sender, amount, i_oracle.getETHMyUSDPrice());
     }
 
-    // Checkpoint 7: Liquidation - Enforcing System Stability
     function isLiquidatable(address user) public view returns (bool) {
-        
+        uint256 positionRatio = calculatePositionRatio(user);
+        return (positionRatio * 100) < COLLATERAL_RATIO * PRECISION;
     }
 
     function liquidate(address user) external {
-        
+        if (!isLiquidatable(user)) {
+            revert Engine__NotLiquidatable();
+        }
+
+        uint256 userDebtValue = getCurrentDebtValue(user);
+        uint256 userCollateral = s_userCollateral[user];
+        uint256 collateralValue = calculateCollateralValue(user);
+
+        if (i_myUSD.balanceOf(msg.sender) < userDebtValue) {
+            revert MyUSD__InsufficientBalance();
+        }
+
+        if (i_myUSD.allowance(msg.sender, address(this)) < userDebtValue) {
+            revert MyUSD__InsufficientAllowance();
+        }
+
+        i_myUSD.burnFrom(msg.sender, userDebtValue);
+
+        totalDebtShares -= s_userDebtShares[user];
+        s_userDebtShares[user] = 0;
+
+        uint256 collateralToCoverDebt = (userDebtValue * userCollateral) / collateralValue;
+        uint256 rewardAmount = (collateralToCoverDebt * LIQUIDATOR_REWARD) / 100;
+        uint256 amountForLiquidator = collateralToCoverDebt + rewardAmount;
+
+        if (amountForLiquidator > userCollateral) {
+            amountForLiquidator = userCollateral;
+        }
+
+        s_userCollateral[user] = userCollateral - amountForLiquidator;
+
+        (bool sent, ) = payable(msg.sender).call{ value: amountForLiquidator }("");
+        if (!sent) revert Engine__TransferFailed();
+
+        emit Liquidation(user, msg.sender, amountForLiquidator, userDebtValue, i_oracle.getETHMyUSDPrice());
     }
 }
