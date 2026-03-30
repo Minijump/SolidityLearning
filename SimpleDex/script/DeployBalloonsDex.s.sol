@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 import {Script} from "forge-std/Script.sol";
-import {DEX} from "../src/DEX.sol";
+import {DEX} from "../src/Dex.sol";
 import {Balloons} from "../src/Balloons.sol";
 
 contract DeployBalloonsDEX is Script {

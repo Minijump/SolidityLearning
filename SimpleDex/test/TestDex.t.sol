@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 import {Test, console} from "forge-std/Test.sol";
-import {DEX} from "../src/DEX.sol";
+import {DEX} from "../src/Dex.sol";
 import {DeployBalloonsDEX} from "../script/DeployBalloonsDex.s.sol";
 import {Balloons} from "../src/Balloons.sol";
 
