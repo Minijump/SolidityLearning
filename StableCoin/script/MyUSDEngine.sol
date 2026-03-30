@@ -148,13 +148,51 @@ contract MyUSDEngine is Ownable {
         emit BorrowRateUpdated(newRate);
     }
 
-    // Checkpoint 6: Repaying Debt & Withdrawing Collateral
     function repayUpTo(uint256 amount) public {
-        
+        uint256 amountInShares = _getMyUSDToShares(amount);
+        // Check if user has enough debt
+        if (amountInShares > s_userDebtShares[msg.sender]) {
+            // will only use the max amount of MyUSD that can be repaid
+            amountInShares = s_userDebtShares[msg.sender];
+            amount = getCurrentDebtValue(msg.sender);
+        }
+
+        // Check balance
+        if (amount == 0 || i_myUSD.balanceOf(msg.sender) < amount) {
+            revert MyUSD__InsufficientBalance();
+        }
+
+        // Check allowance
+        if (i_myUSD.allowance(msg.sender, address(this)) < amount) {
+            revert MyUSD__InsufficientAllowance();
+        }
+
+        // Update user's debt shares and total shares
+        s_userDebtShares[msg.sender] -= amountInShares;
+        totalDebtShares -= amountInShares;
+
+        i_myUSD.burnFrom(msg.sender, amount);
+
+        emit DebtSharesBurned(msg.sender, amount, amountInShares);
     }
 
     function withdrawCollateral(uint256 amount) external {
-        
+        if (amount == 0) revert Engine__InvalidAmount();
+        if (s_userCollateral[msg.sender] < amount) revert Engine__InsufficientCollateral();
+
+        // Temporarily reduce the user's collateral to check if they remain safe
+        uint256 newCollateral = s_userCollateral[msg.sender] - amount;
+        s_userCollateral[msg.sender] = newCollateral;
+
+        // Validate the user's position after withdrawal
+        if (s_userDebtShares[msg.sender] > 0) {
+            _validatePosition(msg.sender);
+        }
+
+        // Transfer the collateral to the user
+        payable(msg.sender).transfer(amount);
+
+        emit CollateralWithdrawn(msg.sender, amount, i_oracle.getETHMyUSDPrice());
     }
 
     // Checkpoint 7: Liquidation - Enforcing System Stability
