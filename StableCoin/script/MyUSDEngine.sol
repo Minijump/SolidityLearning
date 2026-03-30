@@ -81,17 +81,31 @@ contract MyUSDEngine is Ownable {
         return (collateralAmount * i_oracle.getETHMyUSDPrice()) / PRECISION;
     }
 
-    // Checkpoint 3: Interest Calculation System
     function _getCurrentExchangeRate() internal view returns (uint256) {
-        
+        if (totalDebtShares == 0) return debtExchangeRate;
+
+        uint256 timeElapsed = block.timestamp - lastUpdateTime;
+        if (timeElapsed == 0 || borrowRate == 0) return debtExchangeRate;
+
+        uint256 totalDebtValue = (totalDebtShares * debtExchangeRate) / PRECISION;
+        uint256 interest = (totalDebtValue * borrowRate * timeElapsed) / (SECONDS_PER_YEAR * 10000);
+
+        return debtExchangeRate + (interest * PRECISION) / totalDebtShares;
     }
 
     function _accrueInterest() internal {
-        
+        if (totalDebtShares == 0) {
+            lastUpdateTime = block.timestamp;
+            return;
+        }
+
+        debtExchangeRate = _getCurrentExchangeRate();
+        lastUpdateTime = block.timestamp;
     }
 
     function _getMyUSDToShares(uint256 amount) internal view returns (uint256) {
-        
+        uint256 currentExchangeRate = _getCurrentExchangeRate();
+        return (amount * PRECISION) / currentExchangeRate;
     }
 
     // Checkpoint 4: Minting MyUSD & Position Health
