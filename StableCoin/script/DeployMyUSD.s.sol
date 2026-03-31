@@ -10,13 +10,8 @@ import {MyUSD} from "../src/MyUSD.sol";
 import {DEX} from "../src/DEX.sol";
 
 contract DeployMyUSD is Script {
-    function run() external returns (MyUSDEngine) {
-        return run(msg.sender);
-    }
-
-    function run(address owner) public returns (MyUSDEngine) {
+    function run() public returns (MyUSDEngine) {
         vm.startBroadcast();
-        
         MyUSD myUSD = new MyUSD();
         DEX dex = new DEX(address(myUSD));
         Oracle oracle = new Oracle(address(dex), 2000 ether); // Default price of $2000 for ETH

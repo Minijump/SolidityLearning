@@ -11,10 +11,10 @@ contract DEXTest is Test {
 
     function setUp() external {
         DeployMyUSD deployer = new DeployMyUSD();
-        myUSDEngine = deployer.run(address(this));
+        myUSDEngine = deployer.run();
     }
 
-    function testDeployment() external {
+    function testDeployment() external view{
         assert(address(myUSDEngine) != address(0));
     }
 }
