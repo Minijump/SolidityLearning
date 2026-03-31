@@ -49,8 +49,12 @@ contract MyUSDStaking is Ownable, ReentrancyGuard {
     event SavingsRateUpdated(uint256 newRate);
 
     modifier onlyRateController() {
-        if (msg.sender != i_rateController) revert Staking__NotRateController();
+        _onlyRateController();
         _;
+    }
+
+    function _onlyRateController() internal view{
+        if (msg.sender != i_rateController) revert Staking__NotRateController();
     }
 
     constructor(address _myUSD, address _rateController) Ownable(msg.sender) {

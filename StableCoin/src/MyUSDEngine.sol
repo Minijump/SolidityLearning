@@ -51,8 +51,12 @@ contract MyUSDEngine is Ownable {
     );
 
     modifier onlyRateController() {
-        if (msg.sender != i_rateController) revert Engine__NotRateController();
+        _onlyRateController();
         _;
+    }
+
+    function _onlyRateController() internal view{
+        if (msg.sender != i_rateController) revert Engine__NotRateController();
     }
 
     constructor(
