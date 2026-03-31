@@ -9,7 +9,7 @@ import {RateController} from "../src/RateController.sol";
 import {MyUSD} from "../src/MyUSD.sol";
 import {DEX} from "../src/DEX.sol";
 
-contract DeployMyUSD is Script {
+contract DeployMyUSDEngine is Script {
     function run() public returns (MyUSDEngine) {
         vm.startBroadcast();
         MyUSD myUSD = new MyUSD();
