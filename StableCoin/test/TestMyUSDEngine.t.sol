@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 
 import {Test, console} from "forge-std/Test.sol";
-import {MyUSDEngine, Engine__InvalidAmount, Engine__UnsafePositionRatio, MyUSD__InsufficientAllowance, MyUSD__InsufficientBalance} from "../src/MyUSDEngine.sol";
+import {MyUSDEngine, Engine__InvalidAmount, Engine__UnsafePositionRatio, Engine__InsufficientCollateral, MyUSD__InsufficientAllowance, MyUSD__InsufficientBalance} from "../src/MyUSDEngine.sol";
 import {MyUSD} from "../src/MyUSD.sol";
 import {DeployMyUSDEngine} from "../script/DeployMyUSDEngine.s.sol";
 
@@ -119,5 +119,37 @@ contract DEXTest is Test {
         vm.expectRevert(abi.encodeWithSelector(MyUSD__InsufficientAllowance.selector));
         myUSDEngine.repayUpTo(testedAmount);
         vm.stopPrank();
-     }
+    }
+
+    function testWithdrawCollateral() external {
+        uint256 initialCollateral = myUSDEngine.s_userCollateral(USER_WITH_COLLATERAL);
+        uint256 withdrawAmount = 1 ether;
+        uint256 initialEthBalance = USER_WITH_COLLATERAL.balance;
+
+        vm.startPrank(USER_WITH_COLLATERAL);
+        myUSDEngine.withdrawCollateral(withdrawAmount);
+        vm.stopPrank();
+
+        uint256 finalCollateral = myUSDEngine.s_userCollateral(USER_WITH_COLLATERAL);
+        uint256 finalEthBalance = USER_WITH_COLLATERAL.balance;
+        assertEq(finalCollateral, initialCollateral - withdrawAmount);
+        assertEq(finalEthBalance, initialEthBalance + withdrawAmount);
+    }
+
+    function testWithdrawCollateralWithZeroAmount() external {
+        vm.startPrank(USER_WITH_COLLATERAL);
+        vm.expectRevert(abi.encodeWithSelector(Engine__InvalidAmount.selector));
+        myUSDEngine.withdrawCollateral(0);
+        vm.stopPrank();
+    }
+
+    function testWithdrawCollateralWithInsufficientCollateral() external {
+        uint256 userCollateral = myUSDEngine.s_userCollateral(USER_WITH_COLLATERAL);
+        uint256 withdrawAmount = userCollateral + 1 ether;
+
+        vm.startPrank(USER_WITH_COLLATERAL);
+        vm.expectRevert(abi.encodeWithSelector(Engine__InsufficientCollateral.selector));
+        myUSDEngine.withdrawCollateral(withdrawAmount);
+        vm.stopPrank();
+    }
 }
