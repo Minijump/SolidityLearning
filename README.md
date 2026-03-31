@@ -36,12 +36,15 @@ Name is explicit, a lottery system ruled by smart contracts.
 
 ### SimpleDex [Speedrun]
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-dex
-Create a dex that enables "balloons" swap with Eth; the project is based on speedrun ethereum but will be done with foundry and without the frontend.
+Create a dex that enables "balloons" swap with Eth; the project is based on speedrun ethereum but will be done with foundry and without the frontend. -> the only thing done here is simple unit test to discover the test framework and solidity
 
 ### StableCoin [Speedrun]
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-stablecoins
 Create a decentralized stable coin; the project is based on speedrun ethereum but will be done with foundry and without the frontend.
-TODO: look at project code, unit test it, ...
+-> the only thing done here is simple unit test to discover the test framework and solidity
+
+### DaoFactory [Me]
+'Continuation' of the miniDao project. The smart contract will allow everybody to create its own Dao. Those Dao will have their own token, governance, ... The dao factory will also have its own dex that will allow swap between eth and every DoaToken (+ util swap between them, using eth step?)
 
 
 # Cheatsheet
