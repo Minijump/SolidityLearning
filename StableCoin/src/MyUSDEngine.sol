@@ -20,7 +20,7 @@ contract MyUSDEngine is Ownable {
     uint256 private constant SECONDS_PER_YEAR = 365 days;
     uint256 private constant PRECISION = 1e18;
 
-    MyUSD private i_myUSD;
+    MyUSD public i_myUSD;
     Oracle private i_oracle;
     MyUSDStaking private i_staking;
     address private i_rateController;
