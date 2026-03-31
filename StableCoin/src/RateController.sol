@@ -4,13 +4,22 @@ pragma solidity ^0.8.20;
 import "./MyUSDStaking.sol";
 
 error Engine__InvalidBorrowRate();
+error RateController__AlreadyInitialized();
+error RateController__InvalidAddress();
 
 contract RateController {
     IMyUSDEngine private i_myUSD;
     MyUSDStaking private i_staking;
 
-    constructor(address _myUSD, address _staking) {
+    constructor(address _myUSD) {
+        require(_myUSD != address(0), "Invalid MyUSD address");
         i_myUSD = IMyUSDEngine(_myUSD);
+    }
+
+    /// @notice Set the staking contract address (only once)
+    function setStaking(address _staking) external {
+        if (address(i_staking) != address(0)) revert RateController__AlreadyInitialized();
+        if (_staking == address(0)) revert RateController__InvalidAddress();
         i_staking = MyUSDStaking(_staking);
     }
 

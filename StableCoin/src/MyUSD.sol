@@ -12,13 +12,24 @@ error MyUSD__InsufficientBalance();
 error MyUSD__InsufficientAllowance();
 error MyUSD__InvalidAddress();
 error MyUSD__NotAuthorized();
+error MyUSD__AlreadyInitialized();
 
 contract MyUSD is ERC20, ERC20Burnable, Ownable {
     address public stakingContract;
     address public engineContract;
 
-    constructor(address _engineContract, address _stakingContract) ERC20("MyUSD", "MyUSD") Ownable(msg.sender) {
+    constructor() ERC20("MyUSD", "MyUSD") Ownable(msg.sender) {
+    }
+
+    function setEngineContract(address _engineContract) external onlyOwner {
+        if (engineContract != address(0)) revert MyUSD__AlreadyInitialized();
+        if (_engineContract == address(0)) revert MyUSD__InvalidAddress();
         engineContract = _engineContract;
+    }
+
+    function setStakingContract(address _stakingContract) external onlyOwner {
+        if (stakingContract != address(0)) revert MyUSD__AlreadyInitialized();
+        if (_stakingContract == address(0)) revert MyUSD__InvalidAddress();
         stakingContract = _stakingContract;
     }
 

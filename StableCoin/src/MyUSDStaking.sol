@@ -17,6 +17,8 @@ error Staking__TransferFailed();
 error Staking__InvalidSavingsRate();
 error Staking__EngineNotSet();
 error Staking__NotRateController();
+error Staking__AlreadyInitialized();
+error Staking__InvalidAddress();
 
 contract MyUSDStaking is Ownable, ReentrancyGuard {
     MyUSD public immutable myUSD;
@@ -51,12 +53,18 @@ contract MyUSDStaking is Ownable, ReentrancyGuard {
         _;
     }
 
-    constructor(address _myUSD, address _engine, address _rateController) Ownable(msg.sender) {
+    constructor(address _myUSD, address _rateController) Ownable(msg.sender) {
+        if (_myUSD == address(0)) revert Staking__InvalidAddress();
         myUSD = MyUSD(_myUSD);
-        engine = IMyUSDEngine(_engine);
         i_rateController = _rateController;
         exchangeRate = PRECISION; // 1:1 initially
         lastUpdateTime = block.timestamp;
+    }
+
+    function setEngine(address _engine) external onlyOwner {
+        if (address(engine) != address(0)) revert Staking__AlreadyInitialized();
+        if (_engine == address(0)) revert Staking__InvalidAddress();
+        engine = IMyUSDEngine(_engine);
     }
 
     /**
