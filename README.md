@@ -44,8 +44,13 @@ Create a decentralized stable coin; the project is based on speedrun ethereum bu
 -> the only thing done here is simple unit test to discover the test framework and solidity
 
 ### DaoFactory [Me]
-'Continuation' of the miniDao project. The smart contract will allow everybody to create its own Dao. Those Dao will have their own token, governance, ... The dao factory will also have its own dex that will allow swap between eth and every DoaToken (+ util swap between them, using eth step?)
+'Continuation' of the miniDao project. The smart contract allows everybody to create its own Dao. Those Dao have their own token, governance, ... The daos also have their own dex that allows swap between eth and DoaToken
 
+#TODO: 
+- get results depending of voters token balance => freeze result when the porposal is closed
+- dex to exchange token on dao
+- Bonus: dex on dao factory
+- Bonus: auto close IP (proposer should not have that power)
 
 # Cheatsheet
 Create a new project with: forge init (--use-parent-git)
