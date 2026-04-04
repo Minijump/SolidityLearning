@@ -23,34 +23,10 @@ contract Dao {
         _;
     }
 
-    function createProposal(string memory _name, string memory _description) public onlyTokenHolder {
-        DaoIP newProposal = new DaoIP(_name, _description);
+    function createProposal(string memory _name, string memory _description) public onlyTokenHolder returns (DaoIP) {
+        DaoIP newProposal = new DaoIP(_name, _description, address(token), msg.sender);
         proposals.push(newProposal);
         daoIpMapping[address(newProposal)] = newProposal;
+        return newProposal;
     }
-
-    // function approveProposal(address _proposalAddress) public{
-    //     DaoIP proposal = proposals[_proposalAddress];
-    //     proposal.vote(DaoIP.Vote.Approve);
-    // }
-
-    // function rejectProposal(address _proposalAddress) public{
-    //     DaoIP proposal = proposals[_proposalAddress];
-    //     proposal.vote(DaoIP.Vote.Reject);
-    // }
-
-    // function cancelVoteProposal(address _proposalAddress) public{
-    //     DaoIP proposal = proposals[_proposalAddress];
-    //     proposal.cancelVote();
-    // }
-
-    // function closeProposal(address _proposalAddress) public{
-    //     DaoIP proposal = proposals[_proposalAddress];
-    //     proposal.closeIP();
-    // }
-
-    // function getProposalResult(address _proposalAddress) public view returns (uint256, uint256){
-    //     DaoIP proposal = proposals[_proposalAddress];
-    //     return (proposal.getVotesResults());
-    // }
 }

@@ -8,7 +8,7 @@ import {Dao} from "../src/Dao.sol";
 import {DaoIP} from "../src/DaoIP.sol";
 
 
-contract DaoFactoryTest is Test {
+contract DaoTest is Test {
     Dao dao;
     address USER = makeAddr("user");
 
@@ -27,13 +27,13 @@ contract DaoFactoryTest is Test {
 
     function testCreateProposal() external {
         vm.startPrank(USER);
-        dao.createProposal("Test Proposal", "This is a test proposal.");
+        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
         vm.stopPrank();
 
-        DaoIP proposal = dao.proposals(0);
         assertEq(proposal.name(), "Test Proposal", "Proposal name should be 'Test Proposal'");
         assertEq(proposal.description(), "This is a test proposal.", "Proposal description should be 'This is a test proposal.'");
         assertEq(address(dao.daoIpMapping(address(proposal))), address(proposal), "Proposal should be correctly mapped in daoIpMapping");
+        assertEq(address(proposal.i_proposer()), USER, "Proposer should be the user who created the proposal");
     }
 
     function testCreateProposalWithoutTokens() external {
