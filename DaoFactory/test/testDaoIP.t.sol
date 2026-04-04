@@ -10,24 +10,36 @@ import {DaoIP} from "../src/DaoIP.sol";
 
 contract DaoTest is Test {
     Dao dao;
-    address USER = makeAddr("user");
+    DaoIP proposal;
+    address PROPOSER = makeAddr("proposer");
+    address NON_PROPOSER = makeAddr("nonProposer");
+    address NON_TOKEN_HOLDER = makeAddr("nonTokenHolder");
 
-    function _initUser(address user, uint256 initialEthBalance) internal {
+    function _initUser(address user, uint256 initialEthBalance, uint256 initialDaoTokenBalance) internal {
         vm.deal(user, initialEthBalance);
+        if (initialDaoTokenBalance > 0) {
+            vm.startPrank(address(this));
+            dao.token().transfer(user, initialDaoTokenBalance);
+            vm.stopPrank();
+        }
     }
 
     function setUp() external {
         DaoFactory daoFactory = new DaoFactory();
-        _initUser(USER, 100 ether);
-        vm.startPrank(USER);
         address daoAddress = daoFactory.createDao("TestDAO", "TST");
-        vm.stopPrank();
         dao = Dao(daoAddress);
+
+        _initUser(PROPOSER, 100 ether, 10 ether);
+        _initUser(NON_PROPOSER, 100 ether, 10 ether);
+        _initUser(NON_TOKEN_HOLDER, 100 ether, 0);
+
+        vm.startPrank(PROPOSER);
+        proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
+        vm.stopPrank();
     }
 
     function testCloseProposal() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
+        vm.startPrank(PROPOSER);
 
         proposal.close();
 
@@ -36,21 +48,14 @@ contract DaoTest is Test {
     }
 
     function testCloseProposalByNonProposer() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
-        vm.stopPrank();
-        address nonProposer = makeAddr("nonProposer");
-        _initUser(nonProposer, 100 ether);
-
-        vm.startPrank(nonProposer);
+        vm.startPrank(NON_PROPOSER);
         vm.expectRevert();
         proposal.close();
         vm.stopPrank();
     }
 
     function testCloseAlreadyClosedProposal() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
+        vm.startPrank(PROPOSER);
         proposal.close();
 
         vm.expectRevert();
@@ -59,32 +64,23 @@ contract DaoTest is Test {
     }
 
     function testVote() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
-
+        vm.startPrank(PROPOSER);
         proposal.vote(DaoIP.Vote.Approve);
         vm.stopPrank();
 
-        assertEq(uint8(proposal.votes(USER)), uint8(DaoIP.Vote.Approve), "Vote should be recorded as Approve");
-        assertEq(proposal.voters(0), USER, "Voter should be recorded in voters array");
+        assertEq(uint8(proposal.votes(PROPOSER)), uint8(DaoIP.Vote.Approve), "Vote should be recorded as Approve");
+        assertEq(proposal.voters(0), PROPOSER, "Voter should be recorded in voters array");
     }
 
     function testVoteByNonTokenHolder() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
-        vm.stopPrank();
-        address nonTokenHolder = makeAddr("nonTokenHolder");
-        _initUser(nonTokenHolder, 100 ether);
-
-        vm.startPrank(nonTokenHolder);
+        vm.startPrank(NON_TOKEN_HOLDER);
         vm.expectRevert();
         proposal.vote(DaoIP.Vote.Approve);
         vm.stopPrank();
     }
 
     function testVoteClosedProposal() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
+        vm.startPrank(PROPOSER);
         proposal.close();
 
         vm.expectRevert();
@@ -93,8 +89,7 @@ contract DaoTest is Test {
     }
 
     function testVoteAlreadyVoted() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
+        vm.startPrank(PROPOSER);
         proposal.vote(DaoIP.Vote.Approve);
 
         vm.expectRevert();
@@ -103,29 +98,24 @@ contract DaoTest is Test {
     }
 
     function testCancelVote() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
+        vm.startPrank(PROPOSER);
         proposal.vote(DaoIP.Vote.Approve);
 
         proposal.cancelVote();
 
-        assertEq(uint8(proposal.votes(USER)), uint8(DaoIP.Vote.Abstain), "Vote should be reset to Abstain");
+        assertEq(uint8(proposal.votes(PROPOSER)), uint8(DaoIP.Vote.Abstain), "Vote should be reset to Abstain");
         vm.stopPrank();
     }
 
     function testCancelVoteDidNotVote() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
-
+        vm.startPrank(PROPOSER);
         vm.expectRevert();
         proposal.cancelVote();
         vm.stopPrank();
     }
 
     function testCancelVoteClosedProposal() external {
-        vm.startPrank(USER);
-        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
-        proposal.vote(DaoIP.Vote.Approve);
+        vm.startPrank(PROPOSER);
         proposal.close();
 
         vm.expectRevert();
