@@ -12,13 +12,18 @@ contract Dao {
     DaoIP[] public proposals;
     mapping (address => DaoIP) public daoIpMapping;
 
-    constructor(string memory _name, string memory _symbol) {
+    constructor(address _owner, string memory _name, string memory _symbol) {
         name = _name;
         symbol = _symbol;
-        token = new DaoToken(msg.sender, _name, _symbol, 21000000 ether);
+        token = new DaoToken(_owner, _name, _symbol, 21000000 ether);
     }
 
-    function createProposal(string memory _name, string memory _description) public{
+    modifier onlyTokenHolder() {
+        require(token.balanceOf(msg.sender) > 0, "Only token holders can perform this action");
+        _;
+    }
+
+    function createProposal(string memory _name, string memory _description) public onlyTokenHolder {
         DaoIP newProposal = new DaoIP(_name, _description);
         proposals.push(newProposal);
         daoIpMapping[address(newProposal)] = newProposal;

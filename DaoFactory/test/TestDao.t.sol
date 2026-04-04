@@ -35,4 +35,13 @@ contract DaoFactoryTest is Test {
         assertEq(proposal.description(), "This is a test proposal.", "Proposal description should be 'This is a test proposal.'");
         assertEq(address(dao.daoIpMapping(address(proposal))), address(proposal), "Proposal should be correctly mapped in daoIpMapping");
     }
+
+    function testCreateProposalWithoutTokens() external {
+        address nonTokenHolder = makeAddr("nonTokenHolder");
+        _initUser(nonTokenHolder, 100 ether);
+        vm.startPrank(nonTokenHolder);
+        vm.expectRevert("Only token holders can perform this action");
+        dao.createProposal("Test Proposal", "This is a test proposal.");
+        vm.stopPrank();
+    }
 }
