@@ -19,3 +19,6 @@
 [submodule "StableCoin/lib/openzeppelin-contracts"]
 	path = StableCoin/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "DaoFactory/lib/forge-std"]
+	path = DaoFactory/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
