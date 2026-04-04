@@ -53,7 +53,7 @@ contract DaoIP {
         votes[msg.sender] = _vote;
     }
 
-    function cancelVote() external{
+    function cancelVote() external openIP{
         if (votes[msg.sender] != Vote.Approve && votes[msg.sender] != Vote.Reject) {
             revert DidNotVote();
         }

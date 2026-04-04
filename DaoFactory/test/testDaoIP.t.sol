@@ -48,6 +48,16 @@ contract DaoTest is Test {
         vm.stopPrank();
     }
 
+    function testCloseAlreadyClosedProposal() external {
+        vm.startPrank(USER);
+        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
+        proposal.close();
+
+        vm.expectRevert();
+        proposal.close();
+        vm.stopPrank();
+    }
+
     function testVote() external {
         vm.startPrank(USER);
         DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
@@ -106,6 +116,17 @@ contract DaoTest is Test {
     function testCancelVoteDidNotVote() external {
         vm.startPrank(USER);
         DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
+
+        vm.expectRevert();
+        proposal.cancelVote();
+        vm.stopPrank();
+    }
+
+    function testCancelVoteClosedProposal() external {
+        vm.startPrank(USER);
+        DaoIP proposal = dao.createProposal("Test Proposal", "This is a test proposal.");
+        proposal.vote(DaoIP.Vote.Approve);
+        proposal.close();
 
         vm.expectRevert();
         proposal.cancelVote();
