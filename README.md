@@ -47,7 +47,6 @@ Create a decentralized stable coin; the project is based on speedrun ethereum bu
 'Continuation' of the miniDao project. The smart contract allows everybody to create its own Dao. Those Dao have their own token, governance, ... The daos also have their own dex that allows swap between eth and DoaToken
 
 #TODO: 
-- get results depending of voters token balance => freeze result when the porposal is closed
 - dex to exchange token on dao
 - Bonus: dex on dao factory
 

@@ -57,4 +57,19 @@ contract DaoIP {
         }
         votes[msg.sender] = Vote.Abstain;
     }
+
+    function getResults() external view returns (uint256 approveCount, uint256 rejectCount, uint256 abstainCount) {
+        for (uint256 i = 0; i < voters.length; i++) {
+            address voter = voters[i];
+            Vote voterVote = votes[voter];
+            if (voterVote == Vote.Approve) {
+                approveCount += daoToken.balanceOf(voter);
+            } else if (voterVote == Vote.Reject) {
+                rejectCount += daoToken.balanceOf(voter);
+            } else {
+                abstainCount += daoToken.balanceOf(voter);
+            }
+        }
+        return (approveCount, rejectCount, abstainCount);
+    }
 }

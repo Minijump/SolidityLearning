@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
 
@@ -30,7 +30,7 @@ contract DaoTest is Test {
         dao = Dao(daoAddress);
 
         _initUser(PROPOSER, 100 ether, 10 ether);
-        _initUser(NON_PROPOSER, 100 ether, 10 ether);
+        _initUser(NON_PROPOSER, 100 ether, 5 ether);
         _initUser(NON_TOKEN_HOLDER, 100 ether, 0);
 
         vm.startPrank(PROPOSER);
@@ -104,5 +104,25 @@ contract DaoTest is Test {
         vm.expectRevert();
         proposal.cancelVote();
         vm.stopPrank();
+    }
+
+    function testGetResults() external {
+        vm.startPrank(PROPOSER);
+        proposal.vote(DaoIP.Vote.Approve);
+        vm.stopPrank();
+        vm.startPrank(NON_PROPOSER);
+        proposal.vote(DaoIP.Vote.Reject);
+        vm.stopPrank();
+        address abstainVoter = makeAddr("abstainVoter");
+        _initUser(abstainVoter, 100 ether, 1 ether);
+        vm.startPrank(abstainVoter);
+        proposal.vote(DaoIP.Vote.Abstain);
+        vm.stopPrank();
+
+        (uint256 approveCount, uint256 rejectCount, uint256 abstainCount) = proposal.getResults();
+
+        assertEq(approveCount, 10 ether, "Approve count should be 10 ether");
+        assertEq(rejectCount, 5 ether, "Reject count should be 5 ether");
+        assertEq(abstainCount, 1 ether, "Abstain count should be 1 ether");
     }
 }
