@@ -38,29 +38,12 @@ contract DaoTest is Test {
         vm.stopPrank();
     }
 
-    function testCloseProposal() external {
-        vm.startPrank(PROPOSER);
+    function testIsOpenFalseAfterDeadline() external {
+        vm.warp(block.timestamp + 35 days);
 
-        proposal.close();
+        bool open = proposal.isOpen();
 
-        assertFalse(proposal.isOpen(), "Proposal should be closed");
-        vm.stopPrank();
-    }
-
-    function testCloseProposalByNonProposer() external {
-        vm.startPrank(NON_PROPOSER);
-        vm.expectRevert();
-        proposal.close();
-        vm.stopPrank();
-    }
-
-    function testCloseAlreadyClosedProposal() external {
-        vm.startPrank(PROPOSER);
-        proposal.close();
-
-        vm.expectRevert();
-        proposal.close();
-        vm.stopPrank();
+        assertFalse(open, "Proposal should be closed after deadline");
     }
 
     function testVote() external {
@@ -81,7 +64,7 @@ contract DaoTest is Test {
 
     function testVoteClosedProposal() external {
         vm.startPrank(PROPOSER);
-        proposal.close();
+        vm.warp(block.timestamp + 35 days);
 
         vm.expectRevert();
         proposal.vote(DaoIP.Vote.Approve);
@@ -116,7 +99,7 @@ contract DaoTest is Test {
 
     function testCancelVoteClosedProposal() external {
         vm.startPrank(PROPOSER);
-        proposal.close();
+        vm.warp(block.timestamp + 35 days);
 
         vm.expectRevert();
         proposal.cancelVote();

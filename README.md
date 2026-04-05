@@ -50,7 +50,6 @@ Create a decentralized stable coin; the project is based on speedrun ethereum bu
 - get results depending of voters token balance => freeze result when the porposal is closed
 - dex to exchange token on dao
 - Bonus: dex on dao factory
-- Bonus: auto close IP (proposer should not have that power)
 
 # Cheatsheet
 Create a new project with: forge init (--use-parent-git)

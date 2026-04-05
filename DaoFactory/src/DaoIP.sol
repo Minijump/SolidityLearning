@@ -5,14 +5,14 @@ import { DaoToken } from "./DaoToken.sol";
 
 error AlreadyVoted();
 error DidNotVote();
-error NotProposer();
+error DeadlineNotReached();
 error ClosedIP();
 
 contract DaoIP {
     string public name;
     string public description;
     address public immutable i_proposer;
-    bool public isOpen = true;
+    uint256 public immutable i_deadline;
     DaoToken public daoToken;
 
     enum Vote { Abstain, Approve, Reject }
@@ -23,6 +23,7 @@ contract DaoIP {
         name = _name;
         description = _description;
         i_proposer = _proposer;
+        i_deadline = block.timestamp + 30 days;
         daoToken = DaoToken(_daoTokenAddress);
     }
 
@@ -31,16 +32,13 @@ contract DaoIP {
         _;
     }
 
-    modifier onlyProposer() {
-        if (msg.sender != i_proposer){
-            revert NotProposer();
-        }
-        _;
+    function isOpen() public view returns (bool) {
+        return block.timestamp < i_deadline;
     }
 
     modifier openIP() {
-        if (!isOpen){
-            revert ClosedIP(); 
+        if (!isOpen()) {
+            revert ClosedIP();
         }
         _;
     }
@@ -58,9 +56,5 @@ contract DaoIP {
             revert DidNotVote();
         }
         votes[msg.sender] = Vote.Abstain;
-    }
-
-    function close() public onlyProposer openIP{
-        isOpen = false;
     }
 }

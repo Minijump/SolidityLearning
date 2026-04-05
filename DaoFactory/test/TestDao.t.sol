@@ -34,6 +34,7 @@ contract DaoTest is Test {
         assertEq(proposal.description(), "This is a test proposal.", "Proposal description should be 'This is a test proposal.'");
         assertEq(address(dao.daoIpMapping(address(proposal))), address(proposal), "Proposal should be correctly mapped in daoIpMapping");
         assertEq(address(proposal.i_proposer()), USER, "Proposer should be the user who created the proposal");
+        assertTrue(proposal.isOpen(), "Proposal should be open after creation");
     }
 
     function testCreateProposalWithoutTokens() external {
