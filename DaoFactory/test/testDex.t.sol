@@ -127,4 +127,19 @@ contract DaoTest is Test {
         dex.tokenToEth(tokensToSwap);
         vm.stopPrank();
     }
+
+    function testEthToTokenSwap() external {
+        uint256 ethAmount = 1 ether;
+        vm.startPrank(TOKEN_HOLDER);
+        dex.deposit{value: ethAmount}();
+        uint256 ethToSwap = 0.5 ether;
+        vm.stopPrank();
+
+        vm.startPrank(NON_TOKEN_HOLDER);
+        uint256 tokensReceived = dex.ethToToken{value: ethToSwap}();
+
+        vm.stopPrank();
+        assertGt(tokensReceived, 0);
+        assertLt(tokensReceived, ethToSwap);
+    }
 }
