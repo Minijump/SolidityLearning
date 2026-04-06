@@ -1,4 +1,5 @@
 # SolidityLearning
+## Mini Projects
 a repo where I add all the small code I did to learn a bit of solidity
 
 [Cyfrin] = project comes from https://updraft.cyfrin.io/
@@ -46,7 +47,13 @@ Create a decentralized stable coin; the project is based on speedrun ethereum bu
 ### DaoFactory [Me]
 'Continuation' of the miniDao project. The smart contract allows everybody to create its own Dao. Those Dao have their own token, governance, ... The daos also have their own dex that allows swap between eth and DoaToken
 
-# Cheatsheet
+## TODOs
+- clean and complete Cheatsheet
+- [speedrun eth prediction market](https://speedrunethereum.com/challenge/prediction-markets)
+- look at [cryptoZombies](https://cryptozombies.io/)
+- cyfrin adanced foundry
+
+## Cheatsheet
 Create a new project with: forge init (--use-parent-git)
 
 in another terminal, with wsl/
