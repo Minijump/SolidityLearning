@@ -24,7 +24,7 @@ contract Dex {
         TOKEN = IERC20(tokenAddr);
     }
 
-    function _price(uint256 xInput, uint256 xReserves, uint256 yReserves) private view returns (uint256 yOutput) {
+    function _price(uint256 xInput, uint256 xReserves, uint256 yReserves) private pure returns (uint256 yOutput) {
         uint256 xInputWithFee = xInput * 997;
         uint256 numerator = xInputWithFee * yReserves;
         uint256 denominator = (xReserves * 1000) + xInputWithFee;
