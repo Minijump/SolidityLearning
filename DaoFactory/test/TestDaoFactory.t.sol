@@ -30,5 +30,7 @@ contract DaoFactoryTest is Test {
         assertEq(Dao(daoAddress).symbol(), "TST", "DAO symbol should be 'TST'");
         assertEq(Dao(daoAddress).token().name(), "TestDAO", "Token name should be 'TestDAO'");
         assertEq(Dao(daoAddress).token().symbol(), "TST", "Token symbol should be 'TST'");
+        assertEq(Dao(daoAddress).token().balanceOf(USER), 21000000 ether, "User should receive initial token supply");
+        assertEq(address(Dao(daoAddress).dex().TOKEN()), address(Dao(daoAddress).token()), "DEX should be initialized with the DAO's token");
     }
 }
