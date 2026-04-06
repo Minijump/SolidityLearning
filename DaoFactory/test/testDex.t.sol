@@ -71,4 +71,31 @@ contract DaoTest is Test {
         dex.deposit{value: ethAmount}();
         vm.stopPrank();
     }
+
+    function testWIthdrawLiquidity() external {
+        uint256 ethAmount = 1 ether;
+        uint256 initialUserEthBalance = TOKEN_HOLDER.balance;
+        vm.startPrank(TOKEN_HOLDER);
+        dex.deposit{value: ethAmount}();
+        uint256 afterDepositUserEthBalance = TOKEN_HOLDER.balance;
+
+        (uint256 ethWithdrawn, uint256 tokensWithdrawn) = dex.withdraw(ethAmount);
+
+        vm.stopPrank();
+        uint256 finalUserEthBalance = TOKEN_HOLDER.balance;
+        assertEq(finalUserEthBalance, initialUserEthBalance);
+        assertEq(afterDepositUserEthBalance, initialUserEthBalance - ethAmount);
+        assertEq(ethWithdrawn, ethAmount);
+        assertEq(tokensWithdrawn, ethAmount);
+        assertEq(dex.getLiquidity(TOKEN_HOLDER), 0);
+    }
+
+    function testWithdrawLiquidityInsufficient() external {
+        uint256 ethAmount = 1 ether;
+        vm.startPrank(TOKEN_HOLDER);
+        dex.deposit{value: ethAmount}();
+        vm.expectRevert();
+        dex.withdraw(2 ether);
+        vm.stopPrank();
+    }
 }
