@@ -11,18 +11,22 @@ import {Dex} from "../src/Dex.sol";
 
 contract DaoTest is Test {
     Dao dao;
+    Dex dex;
 
     address TOKEN_HOLDER = makeAddr("tokenHolder");
     address NON_TOKEN_HOLDER = makeAddr("nonTokenHolder");
+    address NO_ALLOWANCE_TOKEN_HOLDER = makeAddr("noAllowanceTokenHolder");
 
-    function _initUser(address user, uint256 initialEthBalance, uint256 initialDaoTokenBalance) internal {
+    function _initUser(address user, uint256 initialEthBalance, uint256 initialDaoTokenBalance, uint256 initialDexAllowance) internal {
         vm.deal(user, initialEthBalance);
         if (initialDaoTokenBalance > 0) {
             vm.startPrank(address(this));
             dao.token().transfer(user, initialDaoTokenBalance);
             vm.stopPrank();
+        }
+        if (initialDexAllowance > 0) {
             vm.startPrank(user);
-            dao.token().approve(address(dao.dex()), initialDaoTokenBalance);
+            dao.token().approve(address(dex), initialDexAllowance);
             vm.stopPrank();
         }
     }
@@ -31,21 +35,40 @@ contract DaoTest is Test {
         DaoFactory daoFactory = new DaoFactory();
         address daoAddress = daoFactory.createDao("TestDAO", "TST");
         dao = Dao(daoAddress);
-        _initUser(TOKEN_HOLDER, 1000 ether, 1000 ether);
+        dex = dao.dex();
+        _initUser(TOKEN_HOLDER, 1000 ether, 1000 ether, 1000 ether);
+        _initUser(NON_TOKEN_HOLDER, 1000 ether, 0, 1000 ether);
+        _initUser(NO_ALLOWANCE_TOKEN_HOLDER, 1000 ether, 1000 ether, 0);
     }
 
     function testDepositLiquidity() external {
         uint256 ethAmount = 1 ether;
         vm.startPrank(TOKEN_HOLDER);
 
-        dao.dex().deposit{value: ethAmount}();
+        dex.deposit{value: ethAmount}();
 
         vm.stopPrank();
-        uint256 userLiquidity = dao.dex().getLiquidity(TOKEN_HOLDER);
+        uint256 userLiquidity = dex.getLiquidity(TOKEN_HOLDER);
         assertEq(userLiquidity, ethAmount);
-        uint256 dexEthBalance = address(dao.dex()).balance;
-        uint256 dexTokenBalance = dao.token().balanceOf(address(dao.dex()));
+        uint256 dexEthBalance = address(dex).balance;
+        uint256 dexTokenBalance = dao.token().balanceOf(address(dex));
         assertEq(dexEthBalance, ethAmount);
         assertEq(dexTokenBalance, ethAmount);
+    }
+
+    function testDepositLiquidityNonTokenHolder() external {
+        uint256 ethAmount = 1 ether;
+        vm.startPrank(NON_TOKEN_HOLDER);
+        vm.expectRevert();
+        dex.deposit{value: ethAmount}();
+        vm.stopPrank();
+    }
+
+    function testDepositLiquidityNoAllowance() external {
+        uint256 ethAmount = 1 ether;
+        vm.startPrank(NO_ALLOWANCE_TOKEN_HOLDER);
+        vm.expectRevert();
+        dex.deposit{value: ethAmount}();
+        vm.stopPrank();
     }
 }
