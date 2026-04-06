@@ -13,9 +13,22 @@ contract DaoTest is Test {
     Dao dao;
     Dex dex;
 
+    uint256 ethAmount = 1 ether;
+
     address TOKEN_HOLDER = makeAddr("tokenHolder");
     address NON_TOKEN_HOLDER = makeAddr("nonTokenHolder");
     address NO_ALLOWANCE_TOKEN_HOLDER = makeAddr("noAllowanceTokenHolder");
+
+    function _depositInitialLiquidity(address user, uint256 initialEthAmount) internal {
+        vm.startPrank(user);
+        dex.deposit{value: initialEthAmount}();
+        vm.stopPrank();
+    }
+
+    modifier withInitialLiquidity() {
+        _depositInitialLiquidity(TOKEN_HOLDER, ethAmount);
+        _;
+    }
 
     function _initUser(address user, uint256 initialEthBalance, uint256 initialDaoTokenBalance, uint256 initialDexAllowance) internal {
         vm.deal(user, initialEthBalance);
@@ -42,7 +55,6 @@ contract DaoTest is Test {
     }
 
     function testDepositLiquidity() external {
-        uint256 ethAmount = 1 ether;
         vm.startPrank(TOKEN_HOLDER);
 
         dex.deposit{value: ethAmount}();
@@ -57,7 +69,6 @@ contract DaoTest is Test {
     }
 
     function testDepositLiquidityNonTokenHolder() external {
-        uint256 ethAmount = 1 ether;
         vm.startPrank(NON_TOKEN_HOLDER);
         vm.expectRevert();
         dex.deposit{value: ethAmount}();
@@ -65,45 +76,36 @@ contract DaoTest is Test {
     }
 
     function testDepositLiquidityNoAllowance() external {
-        uint256 ethAmount = 1 ether;
         vm.startPrank(NO_ALLOWANCE_TOKEN_HOLDER);
         vm.expectRevert();
         dex.deposit{value: ethAmount}();
         vm.stopPrank();
     }
 
-    function testWIthdrawLiquidity() external {
-        uint256 ethAmount = 1 ether;
-        uint256 initialUserEthBalance = TOKEN_HOLDER.balance;
+    function testWIthdrawLiquidity() external withInitialLiquidity {
+        uint256 beforeWithdrawEthBalance = TOKEN_HOLDER.balance;
+        
         vm.startPrank(TOKEN_HOLDER);
-        dex.deposit{value: ethAmount}();
-        uint256 afterDepositUserEthBalance = TOKEN_HOLDER.balance;
-
         (uint256 ethWithdrawn, uint256 tokensWithdrawn) = dex.withdraw(ethAmount);
-
         vm.stopPrank();
-        uint256 finalUserEthBalance = TOKEN_HOLDER.balance;
-        assertEq(finalUserEthBalance, initialUserEthBalance);
-        assertEq(afterDepositUserEthBalance, initialUserEthBalance - ethAmount);
+
+        uint256 afterWithdrawEthBalance = TOKEN_HOLDER.balance;
+        assertEq(afterWithdrawEthBalance, beforeWithdrawEthBalance + ethAmount);
         assertEq(ethWithdrawn, ethAmount);
         assertEq(tokensWithdrawn, ethAmount);
         assertEq(dex.getLiquidity(TOKEN_HOLDER), 0);
     }
 
-    function testWithdrawLiquidityInsufficient() external {
-        uint256 ethAmount = 1 ether;
+    function testWithdrawLiquidityInsufficient() external withInitialLiquidity {
         vm.startPrank(TOKEN_HOLDER);
-        dex.deposit{value: ethAmount}();
         vm.expectRevert();
         dex.withdraw(2 ether);
         vm.stopPrank();
     }
 
-    function testTokenToEthSwap() external {
-        uint256 ethAmount = 1 ether;
-        vm.startPrank(TOKEN_HOLDER);
-        dex.deposit{value: ethAmount}();
+    function testTokenToEthSwap() external withInitialLiquidity {
         uint256 tokensToSwap = 0.5 ether;
+        vm.startPrank(TOKEN_HOLDER);
 
         uint256 ethReceived = dex.tokenToEth(tokensToSwap);
 
@@ -112,7 +114,7 @@ contract DaoTest is Test {
         assertLt(ethReceived, ethAmount);
     }
 
-    function testTokenToEthSwapNoAllowance() external {
+    function testTokenToEthSwapNoAllowance() external withInitialLiquidity {
         uint256 tokensToSwap = 0.5 ether;
         vm.startPrank(NO_ALLOWANCE_TOKEN_HOLDER);
         vm.expectRevert();
@@ -120,7 +122,7 @@ contract DaoTest is Test {
         vm.stopPrank();
     }
 
-    function testTokenToEthSwapInsufficientTokens() external {
+    function testTokenToEthSwapInsufficientTokens() external withInitialLiquidity {
         uint256 tokensToSwap = 0.5 ether;
         vm.startPrank(NON_TOKEN_HOLDER);
         vm.expectRevert();
@@ -128,17 +130,13 @@ contract DaoTest is Test {
         vm.stopPrank();
     }
 
-    function testEthToTokenSwap() external {
-        uint256 ethAmount = 1 ether;
-        vm.startPrank(TOKEN_HOLDER);
-        dex.deposit{value: ethAmount}();
+    function testEthToTokenSwap() external withInitialLiquidity {
         uint256 ethToSwap = 0.5 ether;
-        vm.stopPrank();
 
         vm.startPrank(NON_TOKEN_HOLDER);
         uint256 tokensReceived = dex.ethToToken{value: ethToSwap}();
-
         vm.stopPrank();
+
         assertGt(tokensReceived, 0);
         assertLt(tokensReceived, ethToSwap);
     }
