@@ -4,7 +4,6 @@ pragma solidity 0.8.20;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Dex {
-    error DexAlreadyInitialized();
     error TokenTransferFailed();
     error AmountTokenEthMismatch(uint256 providedToken, uint256 providedEth);
     error InvalidEthAmount();
@@ -26,22 +25,6 @@ contract Dex {
 
     constructor(address tokenAddr) {
         TOKEN = IERC20(tokenAddr);
-    }
-
-    function init(uint256 tokens) public payable returns (uint256 initialLiquidity) {
-        if (tokens != msg.value) {
-            revert AmountTokenEthMismatch(tokens, msg.value);
-        }
-        if (totalLiquidity > 0) {
-            revert DexAlreadyInitialized();
-        }
-
-        initialLiquidity = address(this).balance;
-        liquidity[msg.sender] = initialLiquidity;
-        totalLiquidity = initialLiquidity;
-
-        if (!TOKEN.transferFrom(msg.sender, address(this), tokens)) revert TokenTransferFailed();
-        return initialLiquidity;
     }
 
     function price(uint256 xInput, uint256 xReserves, uint256 yReserves) public pure returns (uint256 yOutput) {
@@ -88,13 +71,25 @@ contract Dex {
         if (msg.value == 0) revert InvalidEthAmount();
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 tokenReserve = TOKEN.balanceOf(address(this));
-        uint256 tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
+        
+        uint256 tokenDeposit;
+        uint256 liquidityMinted;
+        
+        // First deposit - initialize the pool
+        if (totalLiquidity == 0) {
+            tokenDeposit = msg.value; // 1:1 ratio for initial deposit
+            liquidityMinted = address(this).balance;
+        } else {
+            // Subsequent deposits - maintain ratio
+            tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
+            liquidityMinted = msg.value * totalLiquidity / ethReserve;
+        }
+        
         uint256 bal = TOKEN.balanceOf(msg.sender);
         if (bal < tokenDeposit) revert InsufficientTokenBalance(bal, tokenDeposit);
         uint256 allow = TOKEN.allowance(msg.sender, address(this));
         if (allow < tokenDeposit) revert InsufficientTokenAllowance(allow, tokenDeposit);
 
-        uint256 liquidityMinted = msg.value * totalLiquidity / ethReserve;
         liquidity[msg.sender] += liquidityMinted;
         totalLiquidity += liquidityMinted;
 
