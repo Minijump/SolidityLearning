@@ -5,9 +5,6 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Dex {
     error TokenTransferFailed();
-    error AmountTokenEthMismatch(uint256 providedToken, uint256 providedEth);
-    error InvalidEthAmount();
-    error InvalidTokenAmount();
     error InsufficientTokenBalance(uint256 available, uint256 required);
     error InsufficientTokenAllowance(uint256 available, uint256 required);
     error EthTransferFailed(address to, uint256 amount);
@@ -27,7 +24,7 @@ contract Dex {
         TOKEN = IERC20(tokenAddr);
     }
 
-    function price(uint256 xInput, uint256 xReserves, uint256 yReserves) public pure returns (uint256 yOutput) {
+    function _price(uint256 xInput, uint256 xReserves, uint256 yReserves) private view returns (uint256 yOutput) {
         uint256 xInputWithFee = xInput * 997;
         uint256 numerator = xInputWithFee * yReserves;
         uint256 denominator = (xReserves * 1000) + xInputWithFee;
@@ -38,12 +35,18 @@ contract Dex {
         return liquidity[lp];
     }
 
+    function _validateTokenTransfer(uint256 amount) private view {
+        uint256 bal = TOKEN.balanceOf(msg.sender);
+        if (bal < amount) revert InsufficientTokenBalance(bal, amount);
+        uint256 allow = TOKEN.allowance(msg.sender, address(this));
+        if (allow < amount) revert InsufficientTokenAllowance(allow, amount);
+    }
+
     function ethToToken() public payable returns (uint256 tokenOutput) {
-        if (msg.value == 0) revert InvalidEthAmount();
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 tokenReserve = TOKEN.balanceOf(address(this));
 
-        tokenOutput = price(msg.value, ethReserve, tokenReserve);
+        tokenOutput = _price(msg.value, ethReserve, tokenReserve);
         if (!TOKEN.transfer(msg.sender, tokenOutput)) revert TokenTransferFailed();
 
         emit EthToTokenSwap(msg.sender, tokenOutput, msg.value);
@@ -51,49 +54,36 @@ contract Dex {
     }
 
     function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
-        if (tokenInput == 0) revert InvalidTokenAmount();
-        uint256 bal = TOKEN.balanceOf(msg.sender);
-        if (bal < tokenInput) revert InsufficientTokenBalance(bal, tokenInput);
-        uint256 allow = TOKEN.allowance(msg.sender, address(this));
-        if (allow < tokenInput) revert InsufficientTokenAllowance(allow, tokenInput);
+        _validateTokenTransfer(tokenInput);
         uint256 tokenReserve = TOKEN.balanceOf(address(this));
 
-        ethOutput = price(tokenInput, tokenReserve, address(this).balance);
+        ethOutput = _price(tokenInput, tokenReserve, address(this).balance);
         if (!TOKEN.transferFrom(msg.sender, address(this), tokenInput)) revert TokenTransferFailed();
         (bool sent, ) = msg.sender.call{ value: ethOutput }("");
-
         if (!sent) revert EthTransferFailed(msg.sender, ethOutput);
+
         emit TokenToEthSwap(msg.sender, tokenInput, ethOutput);
         return ethOutput;
     }
 
     function deposit() public payable returns (uint256 tokensDeposited) {
-        if (msg.value == 0) revert InvalidEthAmount();
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 tokenReserve = TOKEN.balanceOf(address(this));
-        
         uint256 tokenDeposit;
         uint256 liquidityMinted;
-        
-        // First deposit - initialize the pool
         if (totalLiquidity == 0) {
             tokenDeposit = msg.value; // 1:1 ratio for initial deposit
             liquidityMinted = address(this).balance;
         } else {
-            // Subsequent deposits - maintain ratio
             tokenDeposit = (msg.value * tokenReserve / ethReserve) + 1;
             liquidityMinted = msg.value * totalLiquidity / ethReserve;
         }
-        
-        uint256 bal = TOKEN.balanceOf(msg.sender);
-        if (bal < tokenDeposit) revert InsufficientTokenBalance(bal, tokenDeposit);
-        uint256 allow = TOKEN.allowance(msg.sender, address(this));
-        if (allow < tokenDeposit) revert InsufficientTokenAllowance(allow, tokenDeposit);
+        _validateTokenTransfer(tokenDeposit);
 
         liquidity[msg.sender] += liquidityMinted;
         totalLiquidity += liquidityMinted;
-
         if (!TOKEN.transferFrom(msg.sender, address(this), tokenDeposit)) revert TokenTransferFailed();
+
         emit LiquidityProvided(msg.sender, liquidityMinted, msg.value, tokenDeposit);
         return tokenDeposit;
     }
