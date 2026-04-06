@@ -68,6 +68,19 @@ contract DaoTest is Test {
         assertEq(dexTokenBalance, ethAmount);
     }
 
+    function testDepositLiquiditySecondTime() external withInitialLiquidity {
+        vm.startPrank(TOKEN_HOLDER);
+        dex.deposit{value: ethAmount}();
+        vm.stopPrank();
+
+        uint256 userLiquidity = dex.getLiquidity(TOKEN_HOLDER);
+        assertEq(userLiquidity, 2 * ethAmount);
+        uint256 dexEthBalance = address(dex).balance;
+        uint256 dexTokenBalance = dao.token().balanceOf(address(dex));
+        assertEq(dexEthBalance, 2 * ethAmount);
+        assertEq(dexTokenBalance, 2 * ethAmount + 1);
+    }
+
     function testDepositLiquidityNonTokenHolder() external {
         vm.startPrank(NON_TOKEN_HOLDER);
         vm.expectRevert();
