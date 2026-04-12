@@ -49,7 +49,6 @@ Create a decentralized stable coin; the project is based on speedrun ethereum bu
 
 ## TODOs
 - [speedrun eth prediction market](https://speedrunethereum.com/challenge/prediction-markets)
-- look at [cryptoZombies](https://cryptozombies.io/)
 - cyfrin advanced foundry
 
 ## Cheatsheet
