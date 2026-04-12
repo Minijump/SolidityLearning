@@ -50,10 +50,17 @@ Create a decentralized stable coin; the project is based on speedrun ethereum bu
 ### PredictionMarket [Speedrun]
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-prediction-markets
 Building and understanding a simple prediction market, where users can buy and sell ERC20 outcome shares based on the result of an event.
+TODO finish course
+TODO unit test
 
 ## TODOs
-- [speedrun eth prediction market](https://speedrunethereum.com/challenge/prediction-markets)
+- finish prediction market
+- small synthesis/cheatsheet on solidity keywords used until now (public, external, ...).
+- small security smart contracts 'course', a folder with the most well known security problem, an exemple in code, an example on how to exploit (with the deploy script, ...) and a fix.
+- Personal project (if no idea: check DaoFactory to see if there are some problems (perf, security, ...))
 - cyfrin advanced foundry
+- cyfrin smart contracts security
+- Solidity x Odoo ?
 
 ## Cheatsheet
 
