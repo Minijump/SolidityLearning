@@ -47,6 +47,10 @@ Create a decentralized stable coin; the project is based on speedrun ethereum bu
 ### DaoFactory [Me]
 'Continuation' of the miniDao project. The smart contract allows everybody to create its own Dao. Those Dao have their own token, governance, ... The daos also have their own dex that allows swap between eth and DoaToken
 
+### PredictionMarket [Speedrun]
+https://github.com/scaffold-eth/se-2-challenges/tree/challenge-prediction-markets
+Building and understanding a simple prediction market, where users can buy and sell ERC20 outcome shares based on the result of an event.
+
 ## TODOs
 - [speedrun eth prediction market](https://speedrunethereum.com/challenge/prediction-markets)
 - cyfrin advanced foundry
