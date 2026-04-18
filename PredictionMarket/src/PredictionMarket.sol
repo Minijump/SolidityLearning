@@ -40,10 +40,6 @@ contract PredictionMarket is Ownable {
     uint256 public s_ethCollateral;
     uint256 public s_lpTradingRevenue;
 
-    //////////////////
-    ////Constructor///
-    //////////////////
-
     constructor(
         address _liquidityProvider,
         address _oracle,
@@ -52,7 +48,6 @@ contract PredictionMarket is Ownable {
         uint8 _initialYesProbability,
         uint8 _percentageToLock
     ) payable Ownable(_liquidityProvider) {
-        /// Checkpoint 2 ////
         if (msg.value == 0) {
             revert PredictionMarket__MustProvideETHForInitialLiquidity();
         }
@@ -87,14 +82,6 @@ contract PredictionMarket is Ownable {
         }
     }
 
-    /// Checkpoint 3 ///
-
-    /// Checkpoint 5 ///
-
-    /////////////////////////
-    /// Events //////
-    /////////////////////////
-
     event TokensPurchased(address indexed buyer, Outcome outcome, uint256 amount, uint256 ethAmount);
     event TokensSold(address indexed seller, Outcome outcome, uint256 amount, uint256 ethAmount);
     event WinningTokensRedeemed(address indexed redeemer, uint256 amount, uint256 ethAmount);
@@ -102,36 +89,6 @@ contract PredictionMarket is Ownable {
     event MarketResolved(address indexed resolver, uint256 totalEthToSend);
     event LiquidityAdded(address indexed provider, uint256 ethAmount, uint256 tokensAmount);
     event LiquidityRemoved(address indexed provider, uint256 ethAmount, uint256 tokensAmount);
-
-    /////////////////
-    /// Modifiers ///
-    /////////////////
-
-    /// Checkpoint 5 ///
-
-    /// Checkpoint 6 ///
-
-    /// Checkpoint 8 ///
-
-    //////////////////
-    ////Constructor///
-    //////////////////
-
-    constructor(
-        address _liquidityProvider,
-        address _oracle,
-        string memory _question,
-        uint256 _initialTokenValue,
-        uint8 _initialYesProbability,
-        uint8 _percentageToLock
-    ) payable Ownable(_liquidityProvider) {
-        /// Checkpoint 2 ////
-        /// Checkpoint 3 ////
-    }
-
-    /////////////////
-    /// Functions ///
-    /////////////////
 
     /**
      * @notice Add liquidity to the prediction market and mint tokens
@@ -215,10 +172,6 @@ contract PredictionMarket is Ownable {
         /// Checkpoint 7 ////
     }
 
-    /////////////////////////
-    /// Helper Functions ///
-    ////////////////////////
-
     /**
      * @dev Internal helper to calculate ETH price for both buying and selling
      * @param _outcome The possible outcome (YES or NO)
@@ -251,10 +204,6 @@ contract PredictionMarket is Ownable {
     function _calculateProbability(uint256 tokensSold, uint256 totalSold) private pure returns (uint256) {
         /// Checkpoint 7 ////
     }
-
-    /////////////////////////
-    /// Getter Functions ///
-    ////////////////////////
 
     /**
      * @notice Get the prediction details
