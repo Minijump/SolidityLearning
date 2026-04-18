@@ -256,13 +256,23 @@ contract PredictionMarket is Ownable {
         emit TokensSold(msg.sender, _outcome, _tradingAmount, ethToReceive);
     }
 
-    /**
-     * @notice Redeem winning tokens for ETH after prediction is resolved, winning tokens are burned and user receives ETH
-     * @dev Only if the prediction is resolved
-     * @param _amount The amount of winning tokens to redeem
-     */
-    function redeemWinningTokens(uint256 _amount) external {
-        /// Checkpoint 9 ////
+    function redeemWinningTokens(uint256 _amount) external amountGreaterThanZero(_amount) predictionReported notOwner {
+        if (s_winningToken.balanceOf(msg.sender) < _amount) {
+            revert PredictionMarket__InsufficientWinningTokens();
+        }
+
+        uint256 ethToReceive = (_amount * i_initialTokenValue) / PRECISION;
+
+        s_ethCollateral -= ethToReceive;
+
+        s_winningToken.burn(msg.sender, _amount);
+
+        (bool success,) = msg.sender.call{value: ethToReceive}("");
+        if (!success) {
+            revert PredictionMarket__ETHTransferFailed();
+        }
+
+        emit WinningTokensRedeemed(msg.sender, _amount, ethToReceive);
     }
 
     function getBuyPriceInEth(Outcome _outcome, uint256 _tradingAmount) public view returns (uint256) {
