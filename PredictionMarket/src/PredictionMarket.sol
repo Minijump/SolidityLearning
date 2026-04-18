@@ -92,6 +92,13 @@ contract PredictionMarket is Ownable {
         _;
     }
 
+    modifier predictionReported() {
+        if (!s_isReported) {
+            revert PredictionMarket__PredictionNotReported();
+        }
+        _;
+    }
+
     event TokensPurchased(address indexed buyer, Outcome outcome, uint256 amount, uint256 ethAmount);
     event TokensSold(address indexed seller, Outcome outcome, uint256 amount, uint256 ethAmount);
     event WinningTokensRedeemed(address indexed redeemer, uint256 amount, uint256 ethAmount);
@@ -145,13 +152,32 @@ contract PredictionMarket is Ownable {
     }
 
 
-    /**
-     * @notice Owner of contract can redeem winning tokens held by the contract after prediction is resolved and get ETH from the contract including LP revenue and collateral back
-     * @dev Only callable by the owner and only if the prediction is resolved
-     * @return ethRedeemed The amount of ETH redeemed
-     */
-    function resolveMarketAndWithdraw() external onlyOwner returns (uint256 ethRedeemed) {
-        /// Checkpoint 6 ////
+    function resolveMarketAndWithdraw() external onlyOwner predictionReported returns (uint256 ethRedeemed) {
+        uint256 contractWinningTokens = s_winningToken.balanceOf(address(this));
+        if (contractWinningTokens > 0) {
+            ethRedeemed = (contractWinningTokens * i_initialTokenValue) / PRECISION;
+
+            if (ethRedeemed > s_ethCollateral) {
+                ethRedeemed = s_ethCollateral;
+            }
+
+            s_ethCollateral -= ethRedeemed;
+        }
+
+        uint256 totalEthToSend = ethRedeemed + s_lpTradingRevenue;
+
+        s_lpTradingRevenue = 0;
+
+        s_winningToken.burn(address(this), contractWinningTokens);
+
+        (bool success,) = msg.sender.call{value: totalEthToSend}("");
+        if (!success) {
+            revert PredictionMarket__ETHTransferFailed();
+        }
+
+        emit MarketResolved(msg.sender, totalEthToSend);
+
+        return ethRedeemed;
     }
 
     /**
