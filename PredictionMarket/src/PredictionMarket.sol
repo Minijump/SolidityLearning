@@ -207,58 +207,60 @@ contract PredictionMarket is Ownable {
         /// Checkpoint 9 ////
     }
 
-    /**
-     * @notice Calculate the total ETH price for buying tokens
-     * @param _outcome The possible outcome (YES or NO) to buy tokens for
-     * @param _tradingAmount The amount of tokens to buy
-     * @return The total ETH price
-     */
     function getBuyPriceInEth(Outcome _outcome, uint256 _tradingAmount) public view returns (uint256) {
-        /// Checkpoint 7 ////
+        return _calculatePriceInEth(_outcome, _tradingAmount, false);
     }
 
-    /**
-     * @notice Calculate the total ETH price for selling tokens
-     * @param _outcome The possible outcome (YES or NO) to sell tokens for
-     * @param _tradingAmount The amount of tokens to sell
-     * @return The total ETH price
-     */
     function getSellPriceInEth(Outcome _outcome, uint256 _tradingAmount) public view returns (uint256) {
-        /// Checkpoint 7 ////
+        return _calculatePriceInEth(_outcome, _tradingAmount, true);
     }
 
-    /**
-     * @dev Internal helper to calculate ETH price for both buying and selling
-     * @param _outcome The possible outcome (YES or NO)
-     * @param _tradingAmount The amount of tokens
-     * @param _isSelling Whether this is a sell calculation
-     */
     function _calculatePriceInEth(Outcome _outcome, uint256 _tradingAmount, bool _isSelling)
         private
         view
         returns (uint256)
     {
-        /// Checkpoint 7 ////
+        (uint256 currentTokenReserve, uint256 currentOtherTokenReserve) = _getCurrentReserves(_outcome);
+
+        if (!_isSelling) {
+            if (currentTokenReserve < _tradingAmount) {
+                revert PredictionMarket__InsufficientLiquidity();
+            }
+        }
+
+        uint256 totalTokenSupply = i_yesToken.totalSupply();
+
+        uint256 currentTokenSoldBefore = totalTokenSupply - currentTokenReserve;
+        uint256 currentOtherTokenSold = totalTokenSupply - currentOtherTokenReserve;
+
+        uint256 totalTokensSoldBefore = currentTokenSoldBefore + currentOtherTokenSold;
+        uint256 probabilityBefore = _calculateProbability(currentTokenSoldBefore, totalTokensSoldBefore);
+
+        uint256 currentTokenReserveAfter =
+            _isSelling ? currentTokenReserve + _tradingAmount : currentTokenReserve - _tradingAmount;
+        uint256 currentTokenSoldAfter = totalTokenSupply - currentTokenReserveAfter;
+
+        uint256 totalTokensSoldAfter =
+            _isSelling ? totalTokensSoldBefore - _tradingAmount : totalTokensSoldBefore + _tradingAmount;
+
+        uint256 probabilityAfter = _calculateProbability(currentTokenSoldAfter, totalTokensSoldAfter);
+
+        uint256 probabilityAvg = (probabilityBefore + probabilityAfter) / 2;
+        return (i_initialTokenValue * probabilityAvg * _tradingAmount) / (PRECISION * PRECISION);
     }
 
-    /**
-     * @dev Internal helper to get the current reserves of the tokens
-     * @param _outcome The possible outcome (YES or NO)
-     * @return The current reserves of the tokens
-     */
     function _getCurrentReserves(Outcome _outcome) private view returns (uint256, uint256) {
-        /// Checkpoint 7 ////
+        if (_outcome == Outcome.YES) {
+            return (i_yesToken.balanceOf(address(this)), i_noToken.balanceOf(address(this)));
+        } else {
+            return (i_noToken.balanceOf(address(this)), i_yesToken.balanceOf(address(this)));
+        }
     }
 
-    /**
-     * @dev Internal helper to calculate the probability of the tokens
-     * @param tokensSold The number of tokens sold
-     * @param totalSold The total number of tokens sold
-     * @return The probability of the tokens
-     */
     function _calculateProbability(uint256 tokensSold, uint256 totalSold) private pure returns (uint256) {
-        /// Checkpoint 7 ////
+        return (tokensSold * PRECISION) / totalSold;
     }
+
 
     /**
      * @notice Get the prediction details
