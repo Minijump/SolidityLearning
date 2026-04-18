@@ -50,8 +50,7 @@ Create a decentralized stable coin; the project is based on speedrun ethereum bu
 ### PredictionMarket [Speedrun]
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-prediction-markets
 Building and understanding a simple prediction market, where users can buy and sell ERC20 outcome shares based on the result of an event.
-TODO finish course
-TODO unit test
+TODO do some unit test (do not do whole coverage this time)
 
 ## TODOs
 - finish prediction market
