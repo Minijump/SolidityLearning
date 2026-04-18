@@ -28,3 +28,6 @@
 [submodule "PredictionMarket/lib/forge-std"]
 	path = PredictionMarket/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "PredictionMarket/lib/openzeppelin-contracts"]
+	path = PredictionMarket/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts

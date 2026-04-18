@@ -1,14 +1,10 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
 import {PredictionMarketToken} from "./PredictionMarketToken.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract PredictionMarket is Ownable {
-    /////////////////
-    /// Errors //////
-    /////////////////
-
     error PredictionMarket__MustProvideETHForInitialLiquidity();
     error PredictionMarket__InvalidProbability();
     error PredictionMarket__PredictionAlreadyReported();
@@ -26,10 +22,6 @@ contract PredictionMarket is Ownable {
     error PredictionMarket__InsufficientLiquidity();
     error PredictionMarket__InvalidPercentageToLock();
 
-    //////////////////////////
-    /// State Variables //////
-    //////////////////////////
-
     enum Outcome {
         YES,
         NO
@@ -37,7 +29,47 @@ contract PredictionMarket is Ownable {
 
     uint256 private constant PRECISION = 1e18;
 
-    /// Checkpoint 2 ///
+    address public immutable i_oracle;
+    uint256 public immutable i_initialTokenValue;
+    uint256 public immutable i_percentageLocked;
+    uint256 public immutable i_initialYesProbability;
+
+    string public s_question;
+    uint256 public s_ethCollateral;
+    uint256 public s_lpTradingRevenue;
+
+    //////////////////
+    ////Constructor///
+    //////////////////
+
+    constructor(
+        address _liquidityProvider,
+        address _oracle,
+        string memory _question,
+        uint256 _initialTokenValue,
+        uint8 _initialYesProbability,
+        uint8 _percentageToLock
+    ) payable Ownable(_liquidityProvider) {
+        /// Checkpoint 2 ////
+        if (msg.value == 0) {
+            revert PredictionMarket__MustProvideETHForInitialLiquidity();
+        }
+        if (_initialYesProbability >= 100 || _initialYesProbability == 0) {
+            revert PredictionMarket__InvalidProbability();
+        }
+
+        if (_percentageToLock >= 100 || _percentageToLock == 0) {
+            revert PredictionMarket__InvalidPercentageToLock();
+        }
+
+        i_oracle = _oracle;
+        s_question = _question;
+        i_initialTokenValue = _initialTokenValue;
+        i_initialYesProbability = _initialYesProbability;
+        i_percentageLocked = _percentageToLock;
+
+        s_ethCollateral = msg.value;
+    }
 
     /// Checkpoint 3 ///
 
@@ -253,3 +285,4 @@ contract PredictionMarket is Ownable {
         // winningToken = address(s_winningToken);
     }
 }
+
