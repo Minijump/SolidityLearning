@@ -33,6 +33,8 @@ contract PredictionMarket is Ownable {
     uint256 public immutable i_initialTokenValue;
     uint256 public immutable i_percentageLocked;
     uint256 public immutable i_initialYesProbability;
+    PredictionMarketToken public immutable i_yesToken;
+    PredictionMarketToken public immutable i_noToken;
 
     string public s_question;
     uint256 public s_ethCollateral;
@@ -69,6 +71,20 @@ contract PredictionMarket is Ownable {
         i_percentageLocked = _percentageToLock;
 
         s_ethCollateral = msg.value;
+
+        uint256 initialTokenAmount = (msg.value * PRECISION) / _initialTokenValue;
+        i_yesToken = new PredictionMarketToken("Yes", "Y", msg.sender, initialTokenAmount);
+        i_noToken = new PredictionMarketToken("No", "N", msg.sender, initialTokenAmount);
+
+        uint256 initialYesAmountLocked = (initialTokenAmount * _initialYesProbability * _percentageToLock * 2) / 10000;
+        uint256 initialNoAmountLocked =
+            (initialTokenAmount * (100 - _initialYesProbability) * _percentageToLock * 2) / 10000;
+
+        bool success1 = i_yesToken.transfer(msg.sender, initialYesAmountLocked);
+        bool success2 = i_noToken.transfer(msg.sender, initialNoAmountLocked);
+        if (!success1 || !success2) {
+            revert PredictionMarket__TokenTransferFailed();
+        }
     }
 
     /// Checkpoint 3 ///
