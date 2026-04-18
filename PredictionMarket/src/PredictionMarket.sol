@@ -40,6 +40,9 @@ contract PredictionMarket is Ownable {
     uint256 public s_ethCollateral;
     uint256 public s_lpTradingRevenue;
 
+    PredictionMarketToken public s_winningToken;
+    bool public s_isReported;
+
     constructor(
         address _liquidityProvider,
         address _oracle,
@@ -82,6 +85,13 @@ contract PredictionMarket is Ownable {
         }
     }
 
+    modifier predictionNotReported() {
+        if (s_isReported) {
+            revert PredictionMarket__PredictionAlreadyReported();
+        }
+        _;
+    }
+
     event TokensPurchased(address indexed buyer, Outcome outcome, uint256 amount, uint256 ethAmount);
     event TokensSold(address indexed seller, Outcome outcome, uint256 amount, uint256 ethAmount);
     event WinningTokensRedeemed(address indexed redeemer, uint256 amount, uint256 ethAmount);
@@ -90,31 +100,50 @@ contract PredictionMarket is Ownable {
     event LiquidityAdded(address indexed provider, uint256 ethAmount, uint256 tokensAmount);
     event LiquidityRemoved(address indexed provider, uint256 ethAmount, uint256 tokensAmount);
 
-    /**
-     * @notice Add liquidity to the prediction market and mint tokens
-     * @dev Only the owner can add liquidity and only if the prediction is not reported
-     */
-    function addLiquidity() external payable onlyOwner {
-        //// Checkpoint 4 ////
+    function addLiquidity() external payable onlyOwner predictionNotReported {
+        s_ethCollateral += msg.value;
+
+        uint256 tokensAmount = (msg.value * PRECISION) / i_initialTokenValue;
+
+        i_yesToken.mint(address(this), tokensAmount);
+        i_noToken.mint(address(this), tokensAmount);
+
+        emit LiquidityAdded(msg.sender, msg.value, tokensAmount);
     }
 
-    /**
-     * @notice Remove liquidity from the prediction market and burn respective tokens, if you remove liquidity before prediction ends you got no share of lpReserve
-     * @dev Only the owner can remove liquidity and only if the prediction is not reported
-     * @param _ethToWithdraw Amount of ETH to withdraw from liquidity pool
-     */
-    function removeLiquidity(uint256 _ethToWithdraw) external onlyOwner {
-        //// Checkpoint 4 ////
+    function removeLiquidity (uint256 _ethToWithdraw) external onlyOwner predictionNotReported {
+        uint256 amountTokenToBurn = (_ethToWithdraw / i_initialTokenValue) * PRECISION;
+
+        if (amountTokenToBurn > (i_yesToken.balanceOf(address(this)))) {
+            revert PredictionMarket__InsufficientTokenReserve(Outcome.YES, amountTokenToBurn);
+        }
+
+        if (amountTokenToBurn > (i_noToken.balanceOf(address(this)))) {
+            revert PredictionMarket__InsufficientTokenReserve(Outcome.NO, amountTokenToBurn);
+        }
+
+        s_ethCollateral -= _ethToWithdraw;
+
+        i_yesToken.burn(address(this), amountTokenToBurn);
+        i_noToken.burn(address(this), amountTokenToBurn);
+
+        (bool success,) = msg.sender.call{value: _ethToWithdraw}("");
+        if (!success) {
+            revert PredictionMarket__ETHTransferFailed();
+        }
+
+        emit LiquidityRemoved(msg.sender, _ethToWithdraw, amountTokenToBurn);
     }
 
-    /**
-     * @notice Report the winning outcome for the prediction
-     * @dev Only the oracle can report the winning outcome and only if the prediction is not reported
-     * @param _winningOutcome The winning outcome (YES or NO)
-     */
-    function report(Outcome _winningOutcome) external {
-        //// Checkpoint 5 ////
+    function report(Outcome _winningOutcome) external predictionNotReported {
+        if (msg.sender != i_oracle) {
+            revert PredictionMarket__OnlyOracleCanReport();
+        }
+        s_winningToken = _winningOutcome == Outcome.YES ? i_yesToken : i_noToken;
+        s_isReported = true;
+        emit MarketReported(msg.sender, _winningOutcome, address(s_winningToken));
     }
+
 
     /**
      * @notice Owner of contract can redeem winning tokens held by the contract after prediction is resolved and get ETH from the contract including LP revenue and collateral back
