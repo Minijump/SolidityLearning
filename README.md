@@ -14,26 +14,26 @@ a repo where I add all the small code I did to learn a bit of solidity
 
 [Remix]
 ### Simple storage [Cyfrin]
-Allows storing variable/constants with differents data stuctures.
+Allows storing variable/constants with differents data stuctures. -> project is fully copied
 
 ### Storage factory [Cyfrin]
-Allows creating simple storage contract from a smart contract
+Allows creating simple storage contract from a smart contract -> project is fully copied
 
 ### Fund me [Cyfrin]
-Small fake crowdfunding project. (simplified compared to cyfrin course, removed the oracle)
+Small fake crowdfunding project. -> project is fully copied but simplified compared to cyfrin course, removed the oracle
 
 ### MiniDao [Me]
 The creation of a mini dao smart contract enabling voting, seeing votes, ...
 
 [Foundry]
 ### Foundry Simple storage [Cyfrin]
-The scope of this project is the same as Simple storage but this time we will use foundry to run it.
+The scope of this project is the same as Simple storage but this time we will use foundry to run it. -> project is fully copied
 
 ### Foundry Fund me [Cyfrin]
-Same as FundMe but used foundry to run it
+Same as FundMe but used foundry to run it -> project is fully copied
 
 ### SimpleLottery [Cyfrin]
-Name is explicit, a lottery system ruled by smart contracts.
+Name is explicit, a lottery system ruled by smart contracts. -> project is fully copied
 
 ### SimpleDex [Speedrun]
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-dex
@@ -50,10 +50,9 @@ Create a decentralized stable coin; the project is based on speedrun ethereum bu
 ### PredictionMarket [Speedrun]
 https://github.com/scaffold-eth/se-2-challenges/tree/challenge-prediction-markets
 Building and understanding a simple prediction market, where users can buy and sell ERC20 outcome shares based on the result of an event.
-TODO do some unit test (do not do whole coverage this time)
+-> the only thing done here is simple unit tests, of some function only, to discover the test framework and solidity
 
 ## TODOs
-- finish prediction market
 - small synthesis/cheatsheet on solidity keywords used until now (public, external, ...).
 - small security smart contracts 'course', a folder with the most well known security problem, an exemple in code, an example on how to exploit (with the deploy script, ...) and a fix.
 - Personal project (if no idea: check DaoFactory to see if there are some problems (perf, security, ...))
