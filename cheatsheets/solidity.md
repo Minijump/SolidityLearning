@@ -662,6 +662,7 @@ contract ErrorHandling {
 - `revert()` - Complex conditions, explicit revert (unused gas refund)
 - Custom errors - Most gas efficient, can include parameters
 - `assert()` - Internal errors, should never fail
+
 =>note that eth in msg.value are always refunded
 
 **Modern Pattern (Recommended):**
