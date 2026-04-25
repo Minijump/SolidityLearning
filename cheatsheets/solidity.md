@@ -407,7 +407,7 @@ contract ConstantExample {
 **Quick Guide:**
 - `storage` - Permanent state variables (automatically for state vars)
 - `memory` - Temporary data in functions (arrays, structs, strings)
-- `calldata` - Read-only function parameters (most gas efficient)
+- `calldata` - __Read-only__ function parameters (most gas efficient)
 - `constant` - Fixed at compile time, never changes
 - `immutable` - Set once in constructor, then fixed
 
@@ -659,9 +659,10 @@ contract ErrorHandling {
 
 **Error Handling Quick Guide:**
 - `require()` - Input validation, user errors (gas refund)
-- `revert()` - Complex conditions, explicit revert
+- `revert()` - Complex conditions, explicit revert (unused gas refund)
 - Custom errors - Most gas efficient, can include parameters
 - `assert()` - Internal errors, should never fail
+=>note that eth in msg.value are always refunded
 
 **Modern Pattern (Recommended):**
 ```solidity
