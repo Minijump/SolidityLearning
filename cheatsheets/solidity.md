@@ -1115,29 +1115,3 @@ contract GasOptimization {
 ```
 
 ---
-
-## Quick Reference
-
-### Data Location
-- `storage` - Permanent (state variables)
-- `memory` - Temporary (function variables)
-- `calldata` - Read-only parameters
-
-### Function Types
-- `public` - Anyone can call
-- `external` - Only external calls
-- `internal` - This contract + derived
-- `private` - Only this contract
-
-### State Mutability
-- `view` - Read state only
-- `pure` - No state access
-- `payable` - Accept ETH
-- (no modifier) - Modify state
-
-### Common Imports
-```solidity
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-```
