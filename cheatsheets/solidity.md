@@ -496,6 +496,9 @@ contract Cat is Animal {
 - Use `super` to call parent function
 - Use `override` keyword when overriding parent functions
 
+**Note**
+- Do not forget the use of 'virtual' keyword on the parent function and 'override' on the children (for same fct signature)
+
 ---
 
 ## Interfaces

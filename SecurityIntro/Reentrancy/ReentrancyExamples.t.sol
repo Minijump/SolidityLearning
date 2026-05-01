@@ -6,45 +6,62 @@ import {Test} from "forge-std/Test.sol";
 import {
     VulnerableEtherVault,
     ReentrancyAttacker,
-    FixedEtherVault,
-    FailedReentrancyAttacker
+    PatchedEtherVaultModifier,
+    PatchedEtherVaultCEIPattern
 } from "./ReentrancyExamples.sol";
 
 contract ReentrancyExamplesTest is Test {
     address internal alice = makeAddr("alice");
-    address internal bob = makeAddr("bob");
+    VulnerableEtherVault internal vulnerableVault;
+    PatchedEtherVaultModifier internal patchedVaultModifier;
+    PatchedEtherVaultCEIPattern internal patchedVaultCEIPattern;
 
-    function testExploitDrainsVulnerableVault() external {
-        VulnerableEtherVault vault = new VulnerableEtherVault();
-        ReentrancyAttacker attacker = new ReentrancyAttacker(address(vault));
+    function setUp() external {
+        vulnerableVault = new VulnerableEtherVault();
+        patchedVaultModifier = new PatchedEtherVaultModifier();
+        patchedVaultCEIPattern = new PatchedEtherVaultCEIPattern();
 
-        vm.deal(alice, 5 ether);
-        vm.deal(address(attacker), 1 ether);
-
+        vm.deal(alice, 50 ether);
         vm.prank(alice);
-        vault.deposit{value: 5 ether}();
+        vulnerableVault.deposit{value: 5 ether}();
+        vm.prank(alice);
+        patchedVaultModifier.deposit{value: 5 ether}();
+        vm.prank(alice);
+        patchedVaultCEIPattern.deposit{value: 5 ether}();
+    }
+
+    function testExploit() external {
+        ReentrancyAttacker attacker = new ReentrancyAttacker(address(vulnerableVault));
+        vm.deal(address(attacker), 1 ether);
 
         vm.prank(address(attacker));
         attacker.attack{value: 1 ether}();
 
-        assertEq(address(vault).balance, 0);
+        assertEq(address(vulnerableVault).balance, 0);
         assertEq(address(attacker).balance, 6 ether);
     }
 
-    function testFixedVaultStopsReentrancy() external {
-        FixedEtherVault vault = new FixedEtherVault();
-        FailedReentrancyAttacker attacker = new FailedReentrancyAttacker(address(vault));
-
-        vm.deal(bob, 5 ether);
+    function testPatchedModifier() external {
+        ReentrancyAttacker attacker = new ReentrancyAttacker(address(patchedVaultModifier));
         vm.deal(address(attacker), 1 ether);
-
-        vm.prank(bob);
-        vault.deposit{value: 5 ether}();
 
         vm.expectRevert();
         vm.prank(address(attacker));
         attacker.attack{value: 1 ether}();
 
-        assertEq(address(vault).balance, 5 ether);
+        assertEq(address(patchedVaultModifier).balance, 5 ether);
+        assertEq(address(attacker).balance, 1 ether);
+    }
+
+    function testPatchedCEIPattern() external {
+        ReentrancyAttacker attacker = new ReentrancyAttacker(address(patchedVaultCEIPattern));
+        vm.deal(address(attacker), 1 ether);
+
+        vm.expectRevert();
+        vm.prank(address(attacker));
+        attacker.attack{value: 1 ether}();
+
+        assertEq(address(patchedVaultCEIPattern).balance, 5 ether);
+        assertEq(address(attacker).balance, 1 ether);
     }
 }
