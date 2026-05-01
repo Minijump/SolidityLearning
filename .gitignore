@@ -1,4 +1,5 @@
 artifacts/*
 .states/*
 .deps/*
-*.json
+*/out/*
+*/cache/*
