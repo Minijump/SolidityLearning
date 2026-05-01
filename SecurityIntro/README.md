@@ -96,25 +96,8 @@ forge script script/YourScript.s.sol:YourScript --rpc-url http://127.0.0.1:8545 
 
 - The examples are intentionally minimal to keep the attack surface easy to reason about.
 - Some bugs are historical, but they are still useful to learn because the underlying design mistake still matters.
-- If `forge` is not found in your terminal, install Foundry or open a shell where Foundry is already on your `PATH` before running the commands above.
 
-## Study Order
-
-1. `Reentrancy`
-2. `TxOriginPhishing`
-3. `UncheckedReturnValue`
-4. `ArithmeticUnchecked`
-5. `DenialOfService`
-6. `WeakRandomness`
-7. `AccessControlMisconfig`
-8. `SignatureReplay`
-9. `DelegatecallStorageCollision`
-10. `OracleManipulation`
-11. `SelfdestructEdgeCases`
-
-## Priority By Frequency And Impact
-
-These are not equal in practice. If your goal is real-world risk reduction first, prioritize in this order:
+## Suggested Study Order (by frequency and impact)
 
 1. Reentrancy
 2. Access control misconfiguration
@@ -127,9 +110,3 @@ These are not equal in practice. If your goal is real-world risk reduction first
 9. tx.origin phishing
 10. Selfdestruct edge cases
 11. Unchecked arithmetic (mainly when `unchecked` is misused in 0.8+)
-
-Why this ordering:
-
-- The top items appear often in DeFi/NFT/protocol incidents and usually have direct fund impact.
-- Mid-list items are common engineering mistakes that still cause losses or protocol breakage.
-- Lower items are still important to know, but are either more context-specific or less frequent in modern codebases.

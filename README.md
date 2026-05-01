@@ -61,9 +61,11 @@ Forge and solidity cheatsheets of things used until now
 Foundry-based security playground covering several common Solidity issues with explanations, vulnerable examples, exploits, fixes, and exercises.
 
 ## TODOs
+- folder with tx inspections,... (same idea as security folder)
+- folder with gas,... opti (same idea as security)
 - Personal project (if no idea: check DaoFactory to see if there are some problems (perf, security, ...))
-- cyfrin advanced foundry
-- cyfrin smart contracts security
+- cyfrin advanced foundry (complete folder above if needed)
+- cyfrin smart contracts security (complete security folder if needed)
 - Solidity x Odoo ?
 
 ## Cheatsheets
