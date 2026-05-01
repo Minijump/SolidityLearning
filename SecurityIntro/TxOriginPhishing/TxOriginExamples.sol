@@ -22,7 +22,7 @@ contract TxOriginPhishingAttacker {
     VulnerableTxOriginWallet public immutable target;
     address payable public immutable thief;
 
-    constructor(address targetAddress, address payable thiefAddress) {
+    constructor(address payable targetAddress, address payable thiefAddress) {
         target = VulnerableTxOriginWallet(targetAddress);
         thief = thiefAddress;
     }
@@ -53,7 +53,7 @@ contract FailedTxOriginPhishingAttacker {
     FixedMsgSenderWallet public immutable target;
     address payable public immutable thief;
 
-    constructor(address targetAddress, address payable thiefAddress) {
+    constructor(address payable targetAddress, address payable thiefAddress) {
         target = FixedMsgSenderWallet(targetAddress);
         thief = thiefAddress;
     }

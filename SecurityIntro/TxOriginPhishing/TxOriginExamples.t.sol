@@ -16,7 +16,7 @@ contract TxOriginExamplesTest is Test {
 
     function testPhishingContractBypassesTxOriginAuthorization() external {
         VulnerableTxOriginWallet wallet = new VulnerableTxOriginWallet(owner);
-        TxOriginPhishingAttacker attacker = new TxOriginPhishingAttacker(address(wallet), thief);
+        TxOriginPhishingAttacker attacker = new TxOriginPhishingAttacker(payable(address(wallet)), thief);
 
         vm.deal(owner, 5 ether);
 
@@ -33,7 +33,7 @@ contract TxOriginExamplesTest is Test {
 
     function testMsgSenderAuthorizationStopsPhishingContract() external {
         FixedMsgSenderWallet wallet = new FixedMsgSenderWallet(owner);
-        FailedTxOriginPhishingAttacker attacker = new FailedTxOriginPhishingAttacker(address(wallet), thief);
+        FailedTxOriginPhishingAttacker attacker = new FailedTxOriginPhishingAttacker(payable(address(wallet)), thief);
 
         vm.deal(owner, 5 ether);
 
