@@ -10,12 +10,12 @@ contract VulnerableSpotOracle {
 }
 
 contract VulnerableLending {
-    VulnerableSpotOracle public immutable oracle;
+    VulnerableSpotOracle public immutable ORACLE;
     mapping(address => uint256) public collateralEth;
     mapping(address => uint256) public debtEth;
 
     constructor(address oracleAddress) payable {
-        oracle = VulnerableSpotOracle(oracleAddress);
+        ORACLE = VulnerableSpotOracle(oracleAddress);
     }
 
     function depositCollateral() external payable {
@@ -23,7 +23,7 @@ contract VulnerableLending {
     }
 
     function borrow(uint256 amountEth) external {
-        uint256 maxDebt = (collateralEth[msg.sender] * oracle.priceE18()) / 4000e18;
+        uint256 maxDebt = (collateralEth[msg.sender] * ORACLE.priceE18()) / 4000e18;
         require(debtEth[msg.sender] + amountEth <= maxDebt, "insufficient collateral");
 
         debtEth[msg.sender] += amountEth;
@@ -36,25 +36,25 @@ contract VulnerableLending {
 
 contract FixedTrustedOracle {
     uint256 public priceE18 = 2000e18;
-    address public immutable owner;
+    address public immutable OWNER;
 
     constructor(address oracleOwner) {
-        owner = oracleOwner;
+        OWNER = oracleOwner;
     }
 
     function setPrice(uint256 newPriceE18) external {
-        require(msg.sender == owner, "not owner");
+        require(msg.sender == OWNER, "not owner");
         priceE18 = newPriceE18;
     }
 }
 
 contract FixedLending {
-    FixedTrustedOracle public immutable oracle;
+    FixedTrustedOracle public immutable ORACLE;
     mapping(address => uint256) public collateralEth;
     mapping(address => uint256) public debtEth;
 
     constructor(address oracleAddress) payable {
-        oracle = FixedTrustedOracle(oracleAddress);
+        ORACLE = FixedTrustedOracle(oracleAddress);
     }
 
     function depositCollateral() external payable {
@@ -62,7 +62,7 @@ contract FixedLending {
     }
 
     function borrow(uint256 amountEth) external {
-        uint256 maxDebt = (collateralEth[msg.sender] * oracle.priceE18()) / 4000e18;
+        uint256 maxDebt = (collateralEth[msg.sender] * ORACLE.priceE18()) / 4000e18;
         require(debtEth[msg.sender] + amountEth <= maxDebt, "insufficient collateral");
 
         debtEth[msg.sender] += amountEth;

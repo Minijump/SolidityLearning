@@ -51,35 +51,35 @@ contract AlwaysFalseToken is ITokenLike {
 }
 
 contract VulnerableTokenShop {
-    ITokenLike public immutable token;
-    address public immutable treasury;
+    ITokenLike public immutable TOKEN;
+    address public immutable TREASURY;
     uint256 public constant PRICE = 100;
     mapping(address => bool) public hasItem;
 
     constructor(address tokenAddress, address shopTreasury) {
-        token = ITokenLike(tokenAddress);
-        treasury = shopTreasury;
+        TOKEN = ITokenLike(tokenAddress);
+        TREASURY = shopTreasury;
     }
 
     function purchase() external {
-        token.transferFrom(msg.sender, treasury, PRICE);
+        TOKEN.transferFrom(msg.sender, TREASURY, PRICE);
         hasItem[msg.sender] = true;
     }
 }
 
 contract FixedTokenShop {
-    ITokenLike public immutable token;
-    address public immutable treasury;
+    ITokenLike public immutable TOKEN;
+    address public immutable TREASURY;
     uint256 public constant PRICE = 100;
     mapping(address => bool) public hasItem;
 
     constructor(address tokenAddress, address shopTreasury) {
-        token = ITokenLike(tokenAddress);
-        treasury = shopTreasury;
+        TOKEN = ITokenLike(tokenAddress);
+        TREASURY = shopTreasury;
     }
 
     function purchase() external {
-        require(token.transferFrom(msg.sender, treasury, PRICE), "payment failed");
+        require(TOKEN.transferFrom(msg.sender, TREASURY, PRICE), "payment failed");
         hasItem[msg.sender] = true;
     }
 }

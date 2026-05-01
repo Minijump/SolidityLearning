@@ -26,16 +26,16 @@ contract AccessControlAttacker {
 }
 
 contract FixedConstructorVault {
-    address public immutable owner;
+    address public immutable OWNER;
 
     constructor(address vaultOwner) {
-        owner = vaultOwner;
+        OWNER = vaultOwner;
     }
 
     function deposit() external payable {}
 
     function sweep(address payable to) external {
-        require(msg.sender == owner, "not owner");
+        require(msg.sender == OWNER, "not owner");
         (bool ok,) = to.call{value: address(this).balance}("");
         require(ok, "transfer failed");
     }

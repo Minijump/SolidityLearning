@@ -15,12 +15,12 @@ contract ExerciseA_Oracle {
 }
 
 contract ExerciseA_Lending {
-    ExerciseA_Oracle public immutable oracle;
+    ExerciseA_Oracle public immutable ORACLE;
     mapping(address => uint256) public collateralEth;
     mapping(address => uint256) public debtEth;
 
     constructor(address oracleAddress) payable {
-        oracle = ExerciseA_Oracle(oracleAddress);
+        ORACLE = ExerciseA_Oracle(oracleAddress);
     }
 
     function depositCollateral() external payable {
@@ -28,7 +28,7 @@ contract ExerciseA_Lending {
     }
 
     function borrow(uint256 amountEth) external {
-        uint256 maxDebt = (collateralEth[msg.sender] * oracle.priceE18()) / 3600e18;
+        uint256 maxDebt = (collateralEth[msg.sender] * ORACLE.priceE18()) / 3600e18;
         require(debtEth[msg.sender] + amountEth <= maxDebt, "insufficient collateral");
         debtEth[msg.sender] += amountEth;
         (bool ok,) = payable(msg.sender).call{value: amountEth}("");
@@ -49,11 +49,11 @@ contract ExerciseB_VulnerableOracle {
 }
 
 contract ExerciseB_VulnerableLending {
-    ExerciseB_VulnerableOracle public immutable oracle;
+    ExerciseB_VulnerableOracle public immutable ORACLE;
     mapping(address => uint256) public collateralEth;
 
     constructor(address oracleAddress) payable {
-        oracle = ExerciseB_VulnerableOracle(oracleAddress);
+        ORACLE = ExerciseB_VulnerableOracle(oracleAddress);
     }
 
     function depositCollateral() external payable {
@@ -61,7 +61,7 @@ contract ExerciseB_VulnerableLending {
     }
 
     function borrow(uint256 amountEth) external {
-        uint256 maxDebt = (collateralEth[msg.sender] * oracle.priceE18()) / 3600e18;
+        uint256 maxDebt = (collateralEth[msg.sender] * ORACLE.priceE18()) / 3600e18;
         require(amountEth <= maxDebt, "too much");
         (bool ok,) = payable(msg.sender).call{value: amountEth}("");
         require(ok, "transfer failed");

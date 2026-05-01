@@ -2,15 +2,15 @@
 pragma solidity ^0.8.24;
 
 contract VulnerableSignedClaims {
-    address public immutable signer;
+    address public immutable SIGNER;
 
     constructor(address trustedSigner) payable {
-        signer = trustedSigner;
+        SIGNER = trustedSigner;
     }
 
     function claim(address payable recipient, uint256 amount, bytes32 salt, bytes calldata signature) external {
         bytes32 digest = keccak256(abi.encodePacked(recipient, amount, salt, address(this)));
-        require(_recover(digest, signature) == signer, "bad signature");
+        require(_recover(digest, signature) == SIGNER, "bad signature");
 
         (bool ok,) = recipient.call{value: amount}("");
         require(ok, "claim transfer failed");
@@ -33,17 +33,17 @@ contract VulnerableSignedClaims {
 }
 
 contract FixedSignedClaims {
-    address public immutable signer;
+    address public immutable SIGNER;
     mapping(bytes32 => bool) public usedDigests;
 
     constructor(address trustedSigner) payable {
-        signer = trustedSigner;
+        SIGNER = trustedSigner;
     }
 
     function claim(address payable recipient, uint256 amount, bytes32 salt, bytes calldata signature) external {
         bytes32 digest = keccak256(abi.encodePacked(recipient, amount, salt, address(this)));
         require(!usedDigests[digest], "already used");
-        require(_recover(digest, signature) == signer, "bad signature");
+        require(_recover(digest, signature) == SIGNER, "bad signature");
 
         usedDigests[digest] = true;
 

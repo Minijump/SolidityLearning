@@ -17,17 +17,17 @@ contract ExerciseA_AlwaysFalseToken is IExerciseToken {
 }
 
 contract ExerciseA_VulnerableShop {
-    IExerciseToken public immutable token;
-    address public immutable treasury;
+    IExerciseToken public immutable TOKEN;
+    address public immutable TREASURY;
     mapping(address => bool) public purchased;
 
     constructor(address tokenAddress, address treasuryAddress) {
-        token = IExerciseToken(tokenAddress);
-        treasury = treasuryAddress;
+        TOKEN = IExerciseToken(tokenAddress);
+        TREASURY = treasuryAddress;
     }
 
     function buy() external {
-        token.transferFrom(msg.sender, treasury, 100);
+        TOKEN.transferFrom(msg.sender, TREASURY, 100);
         purchased[msg.sender] = true;
     }
 }
@@ -43,17 +43,17 @@ contract ExerciseB_AlwaysFalseToken is IExerciseToken {
 }
 
 contract ExerciseB_VulnerableShop {
-    IExerciseToken public immutable token;
-    address public immutable treasury;
+    IExerciseToken public immutable TOKEN;
+    address public immutable TREASURY;
     mapping(address => bool) public purchased;
 
     constructor(address tokenAddress, address treasuryAddress) {
-        token = IExerciseToken(tokenAddress);
-        treasury = treasuryAddress;
+        TOKEN = IExerciseToken(tokenAddress);
+        TREASURY = treasuryAddress;
     }
 
     function buy() external {
-        token.transferFrom(msg.sender, treasury, 100);
+        TOKEN.transferFrom(msg.sender, TREASURY, 100);
         purchased[msg.sender] = true;
     }
 }

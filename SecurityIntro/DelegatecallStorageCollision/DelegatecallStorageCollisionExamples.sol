@@ -54,15 +54,15 @@ contract VulnerableProxy {
 
 contract FixedProxy {
     bytes32 private constant IMPLEMENTATION_SLOT = bytes32(uint256(keccak256("securityintro.fixedproxy.implementation")) - 1);
-    address public immutable proxyAdmin;
+    address public immutable PROXY_ADMIN;
 
     constructor(address impl) {
-        proxyAdmin = msg.sender;
+        PROXY_ADMIN = msg.sender;
         _setImplementation(impl);
     }
 
     function upgradeTo(address newImpl) external {
-        require(msg.sender == proxyAdmin, "not admin");
+        require(msg.sender == PROXY_ADMIN, "not admin");
         _setImplementation(newImpl);
     }
 

@@ -7,15 +7,15 @@ A1: Use one valid signature twice to claim funds twice.
 A2: Extend replay to multiple recipients if digest format permits it.
 */
 contract ExerciseA_VulnerableClaims {
-    address public immutable signer;
+    address public immutable SIGNER;
 
     constructor(address trustedSigner) payable {
-        signer = trustedSigner;
+        SIGNER = trustedSigner;
     }
 
     function claim(address payable recipient, uint256 amount, bytes32 salt, bytes calldata signature) external {
         bytes32 digest = keccak256(abi.encodePacked(recipient, amount, salt, address(this)));
-        require(_recover(digest, signature) == signer, "bad signature");
+        require(_recover(digest, signature) == SIGNER, "bad signature");
 
         (bool ok,) = recipient.call{value: amount}("");
         require(ok, "transfer failed");
@@ -40,15 +40,15 @@ Exercise Type B (write fix):
 Working replay attacker is provided. Patch only the vulnerable contract.
 */
 contract ExerciseB_VulnerableClaims {
-    address public immutable signer;
+    address public immutable SIGNER;
 
     constructor(address trustedSigner) payable {
-        signer = trustedSigner;
+        SIGNER = trustedSigner;
     }
 
     function claim(address payable recipient, uint256 amount, bytes32 salt, bytes calldata signature) external {
         bytes32 digest = keccak256(abi.encodePacked(recipient, amount, salt, address(this)));
-        require(_recover(digest, signature) == signer, "bad signature");
+        require(_recover(digest, signature) == SIGNER, "bad signature");
 
         (bool ok,) = recipient.call{value: amount}("");
         require(ok, "transfer failed");
