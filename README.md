@@ -8,6 +8,8 @@ a repo where I add all the small code I did to learn a bit of solidity
 
 [Me] = personal project to gather what I learned until that moment
 
+[Me/Copilot] = personal project that I asked copilot to generate, than exerciced on it.
+
 [Remix] = project was done on remix
 
 [Foundry] = project was runned with foundry
@@ -52,8 +54,13 @@ https://github.com/scaffold-eth/se-2-challenges/tree/challenge-prediction-market
 Building and understanding a simple prediction market, where users can buy and sell ERC20 outcome shares based on the result of an event.
 -> the only thing done here is simple unit tests, of some function only, to discover the test framework and solidity
 
+### cheatsheets [Me/Copilot]
+Forge and solidity cheatsheets of things used until now
+
+### SecurityIntro [Me/Copilot]
+Foundry-based security playground covering several common Solidity issues with explanations, vulnerable examples, exploits, fixes, and exercises.
+
 ## TODOs
-- small security smart contracts 'course', a folder with the most well known security problem, an exemple in code, an example on how to exploit (with the deploy script, ...) and a fix.
 - Personal project (if no idea: check DaoFactory to see if there are some problems (perf, security, ...))
 - cyfrin advanced foundry
 - cyfrin smart contracts security
