@@ -4,51 +4,35 @@ pragma solidity ^0.8.24;
 import {Test} from "forge-std/Test.sol";
 
 import {
-    HonestToken,
-    AlwaysFalseToken,
     VulnerableTokenShop,
-    FixedTokenShop
+    PatchedTokenShop,
+    TokenShopAttacker
 } from "./UncheckedReturnValueExamples.sol";
 
 contract UncheckedReturnValueExamplesTest is Test {
-    address internal buyer = makeAddr("buyer");
     address internal treasury = makeAddr("treasury");
+    VulnerableTokenShop internal vulnerableShop;
+    PatchedTokenShop internal patchedShop;
 
-    function testIgnoringFalseReturnLetsBuyerGetItemForFree() external {
-        AlwaysFalseToken token = new AlwaysFalseToken();
-        VulnerableTokenShop shop = new VulnerableTokenShop(address(token), treasury);
-
-        vm.prank(buyer);
-        shop.purchase();
-
-        assertTrue(shop.hasItem(buyer));
-        assertEq(token.balanceOf(treasury), 0);
+    function setUp() external {
+        vulnerableShop = new VulnerableTokenShop(treasury);
+        patchedShop = new PatchedTokenShop(treasury);
     }
 
-    function testCheckingReturnValueRejectsFailedPayment() external {
-        AlwaysFalseToken token = new AlwaysFalseToken();
-        FixedTokenShop shop = new FixedTokenShop(address(token), treasury);
+    function testExploitVulnerableShop() external {
+        TokenShopAttacker attacker = new TokenShopAttacker(address(vulnerableShop));
+
+        attacker.attack();
+
+        assertTrue(vulnerableShop.hasItem(address(attacker)));
+    }
+
+    function testCannotExploitPatchedShop() external {
+        TokenShopAttacker attacker = new TokenShopAttacker(address(patchedShop));
 
         vm.expectRevert();
-        vm.prank(buyer);
-        shop.purchase();
+        attacker.attack();
 
-        assertFalse(shop.hasItem(buyer));
-    }
-
-    function testFixedShopStillWorksWithHonestToken() external {
-        HonestToken token = new HonestToken();
-        FixedTokenShop shop = new FixedTokenShop(address(token), treasury);
-
-        token.mint(buyer, 200);
-
-        vm.startPrank(buyer);
-        token.approve(address(shop), 100);
-        shop.purchase();
-        vm.stopPrank();
-
-        assertTrue(shop.hasItem(buyer));
-        assertEq(token.balanceOf(treasury), 100);
-        assertEq(token.balanceOf(buyer), 100);
+        assertFalse(patchedShop.hasItem(address(attacker)));
     }
 }

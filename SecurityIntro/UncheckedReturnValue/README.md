@@ -10,11 +10,6 @@ This is especially important for ERC20 interactions, legacy tokens, and low-leve
 
 Ignoring a failed transfer can let users receive goods, permissions, or state changes without actually paying.
 
-## Example Set
-
-- `UncheckedReturnValueExamples.sol`: vulnerable shop, failing token, and fixed shop
-- `UncheckedReturnValueExamples.t.sol`: tests showing the free-purchase path and the fix
-
 ## Safer Rule
 
 Always check return values. For ERC20 transfers in production code, prefer safe wrappers such as OpenZeppelin's `SafeERC20`.

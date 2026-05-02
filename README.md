@@ -60,7 +60,6 @@ Forge and solidity cheatsheets of things used until now
 ### SecurityIntro [Me/Copilot]
 Foundry-based security playground covering several common Solidity issues with explanations, vulnerable examples, exploits, fixes, and exercises.
 TODOs
-- Unchecked return values in external calls/token interactions
 - Denial of service patterns (unexpected revert, gas griefing)
 - Delegatecall and proxy storage-collision classes
 - Weak randomness
@@ -71,7 +70,8 @@ TODOs
 ## TODOs
 - folder with tx inspections,... (same idea as security folder)
 - folder with gas,... opti (same idea as security)
-- Personal project (if no idea: check DaoFactory to see if there are some problems (perf, security, ...))(ideas: subscription payment contracts, 'mailbox' with whitelisted users?, ...)
+- DaoFactory self audit (perfs, security, ...)
+- Personal project (ideas: subscription payment contracts, 'mailbox' with whitelisted users, ...)
 - cyfrin advanced foundry (complete folder above if needed)
 - cyfrin smart contracts security (complete security folder if needed)
 - Solidity x Odoo ?
