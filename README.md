@@ -60,7 +60,6 @@ Forge and solidity cheatsheets of things used until now
 ### SecurityIntro [Me/Copilot]
 Foundry-based security playground covering several common Solidity issues with explanations, vulnerable examples, exploits, fixes, and exercises.
 TODOs
-- Access control misconfiguration
 - Oracle manipulation
 - Signature replay and message-validation issues
 - Unchecked return values in external calls/token interactions

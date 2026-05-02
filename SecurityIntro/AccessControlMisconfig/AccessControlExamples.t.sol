@@ -6,42 +6,41 @@ import {Test} from "forge-std/Test.sol";
 import {
     VulnerableInitializableVault,
     AccessControlAttacker,
-    FixedConstructorVault
+    PatchedInitializableVault
 } from "./AccessControlExamples.sol";
 
 contract AccessControlExamplesTest is Test {
     address internal victim = makeAddr("victim");
-    address internal attackerEoa = makeAddr("attackerEoa");
+    address internal attacker = makeAddr("attacker");
+    AccessControlAttacker internal attackerContract;
+
+    function setUp() external {
+        vm.deal(victim, 5 ether);
+        attackerContract = new AccessControlAttacker();
+    }
 
     function testAttackerCanCaptureUninitializedOwnership() external {
         VulnerableInitializableVault vault = new VulnerableInitializableVault();
-        AccessControlAttacker attacker = new AccessControlAttacker();
-
-        vm.deal(victim, 5 ether);
-
         vm.prank(victim);
         vault.deposit{value: 5 ether}();
 
-        vm.prank(attackerEoa);
-        attacker.exploit(vault, payable(attackerEoa));
+        vm.prank(attacker);
+        attackerContract.exploit(vault, payable(attacker));
 
         assertEq(address(vault).balance, 0);
-        assertEq(attackerEoa.balance, 5 ether);
+        assertEq(attacker.balance, 5 ether);
     }
 
     function testConstructorOwnershipPreventsCapture() external {
-        FixedConstructorVault vault = new FixedConstructorVault(victim);
-        AccessControlAttacker attacker = new AccessControlAttacker();
-
-        vm.deal(victim, 5 ether);
-
+        PatchedInitializableVault vault = new PatchedInitializableVault(victim);
         vm.prank(victim);
         vault.deposit{value: 5 ether}();
 
         vm.expectRevert();
-        vm.prank(attackerEoa);
-        attacker.exploit(VulnerableInitializableVault(payable(address(vault))), payable(attackerEoa));
+        vm.prank(attacker);
+        attackerContract.exploit(vault, payable(attacker));
 
         assertEq(address(vault).balance, 5 ether);
+        assertEq(vault.OWNER(), victim);
     }
 }

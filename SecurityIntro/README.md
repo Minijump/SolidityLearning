@@ -30,7 +30,7 @@ forge test --match-path Reentrancy/ReentrancyExamples.t.sol -vvv
 ```
 or 
 ```sh
-forge test --match-path "Reentrancy/*" -vvv
+forge test --match-path Reentrancy/\*.t.sol -vvv
 ```
 
 ## Do I need Anvil?
