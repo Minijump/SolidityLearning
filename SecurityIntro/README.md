@@ -59,17 +59,3 @@ forge script script/YourScript.s.sol:YourScript --rpc-url http://127.0.0.1:8545 
 
 - The examples are intentionally minimal to keep the attack surface easy to reason about.
 - Some bugs are historical, but they are still useful to learn because the underlying design mistake still matters.
-
-## Suggested Study Order (by frequency and impact)
-
-1. Reentrancy
-2. Access control misconfiguration
-3. Oracle manipulation
-4. Signature replay and message-validation issues
-5. Unchecked return values in external calls/token interactions
-6. Denial of service patterns (unexpected revert, gas griefing)
-7. Delegatecall and proxy storage-collision classes
-8. Weak randomness
-9. tx.origin phishing
-10. Selfdestruct edge cases
-11. Unchecked arithmetic (mainly when `unchecked` is misused in 0.8+)
