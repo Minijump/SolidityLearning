@@ -10,11 +10,6 @@ If a contract verifies a signature but does not consume a nonce or unique messag
 
 Attackers can replay old signed messages to withdraw funds repeatedly.
 
-## Example Set
-
-- `SignatureReplayExamples.sol`: vulnerable claim contract and fixed nonce/used-hash contract
-- `SignatureReplayExamples.t.sol`: tests showing replay and prevention
-
 ## Safer Rule
 
 Bind signatures to unique, one-time values (nonces) and enforce single-use of each signed intent.
