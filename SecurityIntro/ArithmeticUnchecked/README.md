@@ -10,11 +10,6 @@ If you use `unchecked` around balance accounting without a proof that underflow 
 
 A single underflow can turn a small balance into a huge number and break all later authorization or withdrawal logic.
 
-## Example Set
-
-- `ArithmeticUncheckedExamples.sol`: vulnerable vault, exploit contract, and fixed vault
-- `ArithmeticUncheckedExamples.t.sol`: tests showing the underflow path and the fix
-
 ## Safer Rule
 
 Use checked arithmetic unless you have a very strong reason not to. If you do use `unchecked`, isolate it and prove the bounds first.

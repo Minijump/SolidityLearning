@@ -58,9 +58,7 @@ Building and understanding a simple prediction market, where users can buy and s
 Forge and solidity cheatsheets of things used until now
 
 ### SecurityIntro [Me/Copilot]
-Foundry-based security playground covering several common Solidity issues with explanations, vulnerable examples, exploits, fixes, and exercises.
-TODOs
-- Unchecked arithmetic
+Foundry-based security playground covering several common Solidity issues with explanations, vulnerable examples, exploits, fixes.
 
 ## TODOs
 - folder with tx inspections,... (same idea as security folder)
