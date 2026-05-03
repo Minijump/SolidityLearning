@@ -8,11 +8,6 @@ A common denial-of-service bug appears when a contract tries to push funds to ma
 
 One malicious participant can block payouts or refunds for every honest user.
 
-## Example Set
-
-- `DenialOfServiceExamples.sol`: vulnerable refund escrow, blocking contract, and fixed pull-payment escrow
-- `DenialOfServiceExamples.t.sol`: tests showing the global failure and the fix
-
 ## Safer Rule
 
 Prefer pull payments over push payments. Let each user withdraw their own funds instead of sending to everyone inside one loop.

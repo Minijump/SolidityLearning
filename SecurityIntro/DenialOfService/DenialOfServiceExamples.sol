@@ -70,14 +70,6 @@ contract RefundBlocker {
         target.contribute{value: msg.value}();
     }
 
-    function contributeToFixed(FixedPullPaymentEscrow target) external payable {
-        target.contribute{value: msg.value}();
-    }
-
-    function withdrawFromFixed(FixedPullPaymentEscrow target) external {
-        target.withdrawRefund();
-    }
-
     receive() external payable {
         revert("refund blocked");
     }
