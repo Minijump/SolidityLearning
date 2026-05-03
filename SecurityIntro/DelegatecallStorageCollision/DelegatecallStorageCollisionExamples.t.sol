@@ -3,44 +3,44 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 
-import {LogicV1, MaliciousLogic, VulnerableProxy, FixedProxy} from "./DelegatecallStorageCollisionExamples.sol";
+import {
+    LogicV1,
+    VulnerableProxy,
+    FixedProxy,
+    ProxyAttacker
+} from "./DelegatecallStorageCollisionExamples.sol";
 
 contract DelegatecallStorageCollisionExamplesTest is Test {
     address internal attacker = makeAddr("attacker");
 
+    LogicV1 internal logic;
+
+    function setUp() external {
+        logic = new LogicV1();
+    }
+
     function testStorageCollisionLetsAttackerHijackImplementation() external {
-        LogicV1 logic = new LogicV1();
-        MaliciousLogic malicious = new MaliciousLogic();
         VulnerableProxy proxy = new VulnerableProxy(address(logic));
-
         vm.deal(address(proxy), 5 ether);
+        vm.prank(attacker);
+        ProxyAttacker attackerContract = new ProxyAttacker();
 
         vm.prank(attacker);
-        (bool ok1,) = address(proxy).call(abi.encodeWithSignature("setOwner(address)", address(malicious)));
-        require(ok1, "setOwner call failed");
-
-        vm.prank(attacker);
-        (bool ok2,) = address(proxy).call(abi.encodeWithSignature("rug(address)", attacker));
-        require(ok2, "rug call failed");
+        attackerContract.attack(address(proxy));
 
         assertEq(address(proxy).balance, 0);
         assertEq(attacker.balance, 5 ether);
     }
 
     function testUnstructuredStoragePreventsImplementationHijack() external {
-        LogicV1 logic = new LogicV1();
-        MaliciousLogic malicious = new MaliciousLogic();
         FixedProxy proxy = new FixedProxy(address(logic));
-
         vm.deal(address(proxy), 5 ether);
+        vm.prank(attacker);
+        ProxyAttacker attackerContract = new ProxyAttacker();
 
         vm.prank(attacker);
-        (bool ok1,) = address(proxy).call(abi.encodeWithSignature("setOwner(address)", address(malicious)));
-        require(ok1, "logic call should still succeed");
-
-        vm.prank(attacker);
-        (bool ok2,) = address(proxy).call(abi.encodeWithSignature("rug(address)", attacker));
-        assertFalse(ok2);
+        vm.expectRevert();
+        attackerContract.attack(address(proxy));
 
         assertEq(address(proxy).balance, 5 ether);
         assertEq(attacker.balance, 0);
