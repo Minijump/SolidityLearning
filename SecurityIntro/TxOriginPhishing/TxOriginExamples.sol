@@ -10,11 +10,23 @@ contract VulnerableTxOriginWallet {
 
     receive() external payable {}
 
-    function transferAll(address payable recipient) external {
+    function _checkOwner() internal view virtual {
         require(tx.origin == OWNER, "not owner origin");
+    }
 
+    function transferAll(address payable recipient) external {
+        _checkOwner();
         (bool success,) = recipient.call{value: address(this).balance}("");
         require(success, "transfer failed");
+    }
+}
+
+contract PatchedWallet is VulnerableTxOriginWallet {
+
+    constructor(address walletOwner) payable VulnerableTxOriginWallet(walletOwner) {}
+
+    function _checkOwner() internal view override {
+        require(msg.sender == OWNER, "not owner sender");
     }
 }
 
@@ -27,38 +39,7 @@ contract TxOriginPhishingAttacker {
         THIEF = thiefAddress;
     }
 
-    function trickOwner() external {
-        TARGET.transferAll(THIEF);
-    }
-}
-
-contract FixedMsgSenderWallet {
-    address public immutable OWNER;
-
-    constructor(address walletOwner) payable {
-        OWNER = walletOwner;
-    }
-
-    receive() external payable {}
-
-    function transferAll(address payable recipient) external {
-        require(msg.sender == OWNER, "not owner sender");
-
-        (bool success,) = recipient.call{value: address(this).balance}("");
-        require(success, "transfer failed");
-    }
-}
-
-contract FailedTxOriginPhishingAttacker {
-    FixedMsgSenderWallet public immutable TARGET;
-    address payable public immutable THIEF;
-
-    constructor(address payable targetAddress, address payable thiefAddress) {
-        TARGET = FixedMsgSenderWallet(targetAddress);
-        THIEF = thiefAddress;
-    }
-
-    function trickOwner() external {
+    receive() external payable {
         TARGET.transferAll(THIEF);
     }
 }

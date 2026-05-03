@@ -10,11 +10,6 @@ If the owner is tricked into calling an attacker contract, that attacker contrac
 
 This bug turns social engineering into an access-control bypass.
 
-## Example Set
-
-- `TxOriginExamples.sol`: vulnerable wallet, phishing contract, and fixed wallet
-- `TxOriginExamples.t.sol`: tests showing the phishing path and the fix
-
 ## Safer Rule
 
 Use `msg.sender` for authorization. Only use `tx.origin` if you fully understand the tradeoff and do not rely on it for permissions.
