@@ -60,8 +60,10 @@ Forge and solidity cheatsheets of things used until now
 ### SecurityIntro [Me/Copilot]
 Foundry-based security playground covering several common Solidity issues with explanations, vulnerable examples, exploits, fixes.
 
+### BlockchainInspection [Me/Copilot]
+Folder to learn how to inspect a blockchain (smart contract, transactions, ...)
+
 ## TODOs
-- folder with tx inspections,... (same idea as security folder)
 - folder with gas,... opti (same idea as security)
 - DaoFactory self audit (perfs, security, ...)
 - Personal project (ideas: subscription payment contracts, 'mailbox' with whitelisted users, ...)
