@@ -140,7 +140,7 @@ echo "Average block time: $AVERAGE seconds"
 ### Gas Limit
 
 Each block has a **gas limit** - total computation allowed:
-- **Current:** ~30,000,000 gas per block
+- **Current:** ~60,000,000 gas per block (soon 200 000 000)
 - **Can increase/decrease** - Network votes
 - **Determines throughput** - How many transactions fit
 
