@@ -45,7 +45,7 @@ contract ArrayInputExample {
         contractValues.push(1);
     }
 
-    /// gas cost: 1588
+    /// gas cost: 1588 (for values length 1)
     function sumMemory(uint256[] memory values) external pure returns (uint256 total) {
         uint256 length = values.length;
         for (uint256 i = 0; i < length; ++i) {
@@ -53,7 +53,7 @@ contract ArrayInputExample {
         }
     }
 
-    /// gas cost: 998
+    /// gas cost: 998 (for values length 1)
     function sumCalldata(uint256[] calldata values) external pure returns (uint256 total) {
         uint256 length = values.length;
         for (uint256 i = 0; i < length; ++i) {
@@ -99,5 +99,198 @@ contract PackingExample {
     // gas cost: 45211
     function writePacked(uint128 amount, bool active, uint64 lastUpdated) external {
         packed = PackedPosition(amount, lastUpdated, active);
+    }
+}
+
+/// @notice Comparison: repeatedly reading the same storage slot vs caching it in memory.
+///
+/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_StorageRead_ --gas-report
+contract StorageReadExample {
+    uint256 public feeBps = 30;
+    uint256 public amountA = 2 ether;
+    uint256 public amountB = 4 ether;
+
+    function quoteWithoutCache() external view returns (uint256 totalFee) {
+        uint256 feeA = (amountA * feeBps) / 10_000;
+        uint256 feeB = (amountB * feeBps) / 10_000;
+        totalFee = feeA + feeB;
+    }
+
+    function quoteWithCache() external view returns (uint256 totalFee) {
+        uint256 cachedFeeBps = feeBps;
+        uint256 feeA = (amountA * cachedFeeBps) / 10_000;
+        uint256 feeB = (amountB * cachedFeeBps) / 10_000;
+        totalFee = feeA + feeB;
+    }
+}
+
+/// @notice Comparison: storage config values vs constant and immutable values.
+///
+/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_ConstantImmutable_ --gas-report
+contract ConstantImmutableExample {
+    uint256 public feeBpsStorage = 30;
+    uint256 public denominatorStorage = 10_000;
+
+    uint256 public immutable feeBpsImmutable;
+    uint256 public constant DENOMINATOR_CONSTANT = 10_000;
+
+    constructor() {
+        feeBpsImmutable = 30;
+    }
+
+    function quoteWithStorageConfig(uint256 amount) external view returns (uint256) {
+        return (amount * feeBpsStorage) / denominatorStorage;
+    }
+
+    function quoteWithImmutableAndConstant(uint256 amount) external view returns (uint256) {
+        return (amount * feeBpsImmutable) / DENOMINATOR_CONSTANT;
+    }
+}
+
+/// @notice Comparison: shifting array elements on removal vs swap-and-pop.
+///
+/// swap-and-pop does not preserve order but is usually much cheaper.
+///
+/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_ArrayRemove_ --gas-report
+contract ArrayRemoveExample {
+    uint256[] internal positions;
+
+    constructor() {
+        for (uint256 i = 1; i <= 8; ++i) {
+            positions.push(i);
+        }
+    }
+
+    function removeWithShift(uint256 index) external {
+        uint256 length = positions.length;
+        require(index < length, "index out of bounds");
+
+        for (uint256 i = index; i < length - 1; ++i) {
+            positions[i] = positions[i + 1];
+        }
+
+        positions.pop();
+    }
+
+    function removeWithSwapAndPop(uint256 index) external {
+        uint256 length = positions.length;
+        require(index < length, "index out of bounds");
+
+        positions[index] = positions[length - 1];
+        positions.pop();
+    }
+
+    function getLength() external view returns (uint256) {
+        return positions.length;
+    }
+}
+
+/// @notice Comparison: dynamic string identifiers vs fixed-size bytes32 identifiers.
+///
+/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_IdentifierType_ --gas-report
+contract IdentifierTypeExample {
+    mapping(string => uint256) public byString;
+    mapping(bytes32 => uint256) public byBytes32;
+
+    function setByString(string calldata id, uint256 value) external {
+        byString[id] = value;
+    }
+
+    function setByBytes32(bytes32 id, uint256 value) external {
+        byBytes32[id] = value;
+    }
+}
+
+/// @notice Comparison: writing to storage multiple times vs computing first and writing once.
+///
+/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_StorageWrite_ --gas-report
+contract StorageWriteExample {
+    uint256 public total;
+
+    function writeMultipleTimes(uint256 amount) external {
+        total = total + amount;
+        total = total + 1;
+    }
+
+    function writeOnce(uint256 amount) external {
+        uint256 newTotal = total + amount + 1;
+        total = newTotal;
+    }
+}
+
+/// @notice Comparison: expensive work before a failing check vs fail-fast check ordering.
+///
+/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_CheckOrder_ --gas-report
+contract CheckOrderExample {
+    function expensiveThenCheck(uint256 amount, bytes calldata payload) external pure returns (bytes32 digest) {
+        digest = keccak256(payload);
+        require(amount <= 100, "amount too high");
+    }
+
+    function checkThenExpensive(uint256 amount, bytes calldata payload) external pure returns (bytes32 digest) {
+        require(amount <= 100, "amount too high");
+        digest = keccak256(payload);
+    }
+}
+
+/// @notice Comparison: public function with memory array vs external function with calldata array.
+///
+/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_VisibilityInput_ --gas-report
+contract VisibilityInputExample {
+    function sumPublic(uint256[] memory values) public pure returns (uint256 total) {
+        uint256 length = values.length;
+        for (uint256 i = 0; i < length; ++i) {
+            total += values[i];
+        }
+    }
+
+    function sumExternal(uint256[] calldata values) external pure returns (uint256 total) {
+        uint256 length = values.length;
+        for (uint256 i = 0; i < length; ++i) {
+            total += values[i];
+        }
+    }
+}
+
+/// @notice Comparison: verbose events with extra data vs lean events.
+///
+/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_Event_ --gas-report
+contract EventExample {
+    event TransferVerbose(
+        address indexed from,
+        address indexed to,
+        uint256 amount,
+        uint256 timestamp,
+        bytes32 indexed transferId,
+        string note
+    );
+
+    event TransferLean(address indexed from, address indexed to, uint256 amount);
+
+    function emitVerbose(address to, uint256 amount, bytes32 transferId, string calldata note) external {
+        emit TransferVerbose(msg.sender, to, amount, block.timestamp, transferId, note);
+    }
+
+    function emitLean(address to, uint256 amount) external {
+        emit TransferLean(msg.sender, to, amount);
+    }
+}
+
+/// @notice Comparison: heavier ABI encoding in a loop vs lighter packed encoding.
+///
+/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_AbiEncoding_ --gas-report
+contract AbiEncodingExample {
+    function hashWithEncode(uint256[] calldata values) external pure returns (bytes32 result) {
+        uint256 length = values.length;
+        for (uint256 i = 0; i < length; ++i) {
+            result = keccak256(abi.encode(result, values[i]));
+        }
+    }
+
+    function hashWithEncodePacked(uint256[] calldata values) external pure returns (bytes32 result) {
+        uint256 length = values.length;
+        for (uint256 i = 0; i < length; ++i) {
+            result = keccak256(abi.encodePacked(result, values[i]));
+        }
     }
 }
