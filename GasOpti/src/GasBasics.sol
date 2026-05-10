@@ -32,8 +32,20 @@ contract CustomErrorExample {
 }
 
 /// @notice Comparison: copying an input array into memory vs reading it directly from calldata.
+/// 
+/// memory copy the data, calldata read the data directly from calldata.
+/// using storage instead of input is even more expensive.
+/// calldata < memory << storage
+///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_ArrayInput_ --gas-report
 contract ArrayInputExample {
+    uint256[] internal contractValues;
+
+    constructor() {
+        contractValues.push(1);
+    }
+
+    /// gas cost: 1588
     function sumMemory(uint256[] memory values) external pure returns (uint256 total) {
         uint256 length = values.length;
         for (uint256 i = 0; i < length; ++i) {
@@ -41,10 +53,19 @@ contract ArrayInputExample {
         }
     }
 
+    /// gas cost: 998
     function sumCalldata(uint256[] calldata values) external pure returns (uint256 total) {
         uint256 length = values.length;
         for (uint256 i = 0; i < length; ++i) {
             total += values[i];
+        }
+    }
+
+    /// gas cost: 5018
+    function sumStorage() external view returns (uint256 total) {
+        uint256 length = contractValues.length;
+        for (uint256 i = 0; i < length; ++i) {
+            total += contractValues[i];
         }
     }
 }

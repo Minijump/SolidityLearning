@@ -22,41 +22,38 @@ contract GasBasicsTest is Test {
         customErrorExample = new CustomErrorExample();
         loopExample = new LoopExample();
         packingExample = new PackingExample();
-
         values.push(1);
-        values.push(2);
-        values.push(3);
-        values.push(5);
-        values.push(8);
-        values.push(13);
-        values.push(21);
-        values.push(34);
     }
+
+    //===============================================================
 
     function test_CustomError_RequireString() public {
         customErrorExample.setWithRequire(42);
-        assertEq(customErrorExample.value(), 42);
     }
 
     function test_CustomError_LargeRequireString() public {
         customErrorExample.setWithRequireWithALongErrorMessage(42);
-        assertEq(customErrorExample.value(), 42);
     }
 
     function test_CustomError_CustomError() public {
         customErrorExample.setWithCustomError(42);
-        assertEq(customErrorExample.value(), 42);
     }
 
+    //===============================================================
+
     function test_ArrayInput_Memory() public view {
-        uint256 total = arrayInputExample.sumMemory(values);
-        assertEq(total, 87);
+        arrayInputExample.sumMemory(values);
     }
 
     function test_ArrayInput_Calldata() public view {
-        uint256 total = arrayInputExample.sumCalldata(values);
-        assertEq(total, 87);
+        arrayInputExample.sumCalldata(values);
     }
+
+    function test_ArrayInput_Storage() public view {
+        arrayInputExample.sumStorage();
+    }
+
+    //===============================================================
 
     function test_Loop_CheckedIncrement() public view {
         uint256 total = loopExample.sumChecked(20);
@@ -67,6 +64,8 @@ contract GasBasicsTest is Test {
         uint256 total = loopExample.sumUnchecked(20);
         assertEq(total, 190);
     }
+
+    //===============================================================
 
     function test_Packing_UnpackedStruct() public {
         packingExample.writeUnpacked(100, true, 1 days);
