@@ -67,7 +67,8 @@ Folder to learn how to inspect a blockchain (smart contract, transactions, ...)
 Compact Foundry playground for common Solidity gas optimizations with concise examples and gas-report-driven comparisons.
 
 ## TODOs
-- DaoFactory self audit (perfs, security, ...)
+- DaoFactory self audit "perf and security"
+- Look at one immunefi project? try run tests locally, play the whitehat, ...
 - Personal project (ideas: subscription payment contracts, 'mailbox' with whitelisted users, ...)
 - cyfrin advanced foundry (complete folder above if needed)
 - cyfrin smart contracts security (complete security folder if needed)
