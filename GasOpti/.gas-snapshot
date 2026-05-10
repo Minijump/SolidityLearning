@@ -1,0 +1,8 @@
+GasBasicsTest:test_ArrayInput_Calldata() (gas: 31223)
+GasBasicsTest:test_ArrayInput_Memory() (gas: 33466)
+GasBasicsTest:test_CustomError_CustomError() (gas: 29081)
+GasBasicsTest:test_CustomError_RequireString() (gas: 29126)
+GasBasicsTest:test_Loop_CheckedIncrement() (gas: 11211)
+GasBasicsTest:test_Loop_UncheckedIncrement() (gas: 11233)
+GasBasicsTest:test_Packing_PackedStruct() (gas: 31690)
+GasBasicsTest:test_Packing_UnpackedStruct() (gas: 75087)

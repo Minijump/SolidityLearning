@@ -63,8 +63,10 @@ Foundry-based security playground covering several common Solidity issues with e
 ### BlockchainInspection [Me/Copilot]
 Folder to learn how to inspect a blockchain (smart contract, transactions, ...)
 
+### GasOpti [Me/Copilot]
+Compact Foundry playground for common Solidity gas optimizations with concise examples and gas-report-driven comparisons.
+
 ## TODOs
-- folder with gas,... opti (same idea as security)
 - DaoFactory self audit (perfs, security, ...)
 - Personal project (ideas: subscription payment contracts, 'mailbox' with whitelisted users, ...)
 - cyfrin advanced foundry (complete folder above if needed)
