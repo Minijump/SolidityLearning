@@ -205,13 +205,17 @@ contract StorageWriteExample {
 
 /// @notice Comparison: expensive work before a failing check vs fail-fast check ordering.
 ///
+/// require fail does not refund the gas used
+//
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_CheckOrder_ --gas-report
 contract CheckOrderExample {
+    // gas cost: 1254
     function expensiveThenCheck(uint256 amount, bytes calldata payload) external pure returns (bytes32 digest) {
         digest = keccak256(payload);
         require(amount <= 100, "amount too high");
     }
 
+    // gas cost: 943
     function checkThenExpensive(uint256 amount, bytes calldata payload) external pure returns (bytes32 digest) {
         require(amount <= 100, "amount too high");
         digest = keccak256(payload);
