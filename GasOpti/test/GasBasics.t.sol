@@ -3,7 +3,6 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {
-    AbiEncodingExample,
     ArrayInputExample,
     CheckOrderExample,
     ConstantImmutableExample,
@@ -18,7 +17,6 @@ import {
 
 contract GasBasicsTest is Test {
     ArrayInputExample internal arrayInputExample;
-    AbiEncodingExample internal abiEncodingExample;
     CheckOrderExample internal checkOrderExample;
     ConstantImmutableExample internal constantImmutableExample;
     CustomErrorExample internal customErrorExample;
@@ -34,7 +32,6 @@ contract GasBasicsTest is Test {
 
     function setUp() public {
         arrayInputExample = new ArrayInputExample();
-        abiEncodingExample = new AbiEncodingExample();
         checkOrderExample = new CheckOrderExample();
         constantImmutableExample = new ConstantImmutableExample();
         customErrorExample = new CustomErrorExample();
@@ -165,15 +162,5 @@ contract GasBasicsTest is Test {
 
     function test_Event_Lean() public {
         eventExample.emitLean(address(2), 10 ether);
-    }
-
-    //===============================================================
-
-    function test_AbiEncoding_Encode() public view {
-        abiEncodingExample.hashWithEncode(values);
-    }
-
-    function test_AbiEncoding_EncodePacked() public view {
-        abiEncodingExample.hashWithEncodePacked(values);
     }
 }

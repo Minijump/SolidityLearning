@@ -270,22 +270,3 @@ contract EventExample {
         emit TransferLean(msg.sender, to, amount);
     }
 }
-
-/// @notice Comparison: heavier ABI encoding in a loop vs lighter packed encoding.
-///
-/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_AbiEncoding_ --gas-report
-contract AbiEncodingExample {
-    function hashWithEncode(uint256[] calldata values) external pure returns (bytes32 result) {
-        uint256 length = values.length;
-        for (uint256 i = 0; i < length; ++i) {
-            result = keccak256(abi.encode(result, values[i]));
-        }
-    }
-
-    function hashWithEncodePacked(uint256[] calldata values) external pure returns (bytes32 result) {
-        uint256 length = values.length;
-        for (uint256 i = 0; i < length; ++i) {
-            result = keccak256(abi.encodePacked(result, values[i]));
-        }
-    }
-}
