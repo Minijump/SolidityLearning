@@ -71,12 +71,15 @@ contract ArrayInputExample {
 }
 
 /// @notice Comparison: unpacked storage structs vs tightly packed values that share fewer storage slots.
+/// 
+/// packed struct only uses fewer storage slots. This makes it less expensive to read and write. 
+///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_Packing_ --gas-report
 contract PackingExample {
     struct UnpackedPosition {
         uint256 amount;
-        bool active;
         uint256 lastUpdated;
+        bool active;
     }
 
     struct PackedPosition {
@@ -85,13 +88,15 @@ contract PackingExample {
         bool active;
     }
 
-    UnpackedPosition public unpacked;
-    PackedPosition public packed;
+    UnpackedPosition public unpacked; // gas cost: 6922
+    PackedPosition public packed; // gas cost: 3127
 
+    // gas cost: 88745
     function writeUnpacked(uint256 amount, bool active, uint256 lastUpdated) external {
-        unpacked = UnpackedPosition(amount, active, lastUpdated);
+        unpacked = UnpackedPosition(amount, lastUpdated, active);
     }
 
+    // gas cost: 45211
     function writePacked(uint128 amount, bool active, uint64 lastUpdated) external {
         packed = PackedPosition(amount, lastUpdated, active);
     }

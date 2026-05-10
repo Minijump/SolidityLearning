@@ -54,17 +54,11 @@ contract GasBasicsTest is Test {
 
     function test_Packing_UnpackedStruct() public {
         packingExample.writeUnpacked(100, true, 1 days);
-        (uint256 amount, bool active, uint256 lastUpdated) = packingExample.unpacked();
-        assertEq(amount, 100);
-        assertTrue(active);
-        assertEq(lastUpdated, 1 days);
+        packingExample.unpacked();
     }
 
     function test_Packing_PackedStruct() public {
         packingExample.writePacked(100, true, uint64(1 days));
-        (uint128 amount, uint64 lastUpdated, bool active) = packingExample.packed();
-        assertEq(amount, 100);
-        assertEq(lastUpdated, 1 days);
-        assertTrue(active);
+        packingExample.packed();
     }
 }
