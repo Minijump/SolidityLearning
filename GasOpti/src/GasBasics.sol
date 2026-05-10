@@ -184,15 +184,19 @@ contract IdentifierTypeExample {
 
 /// @notice Comparison: writing to storage multiple times vs computing first and writing once.
 ///
+/// storage writes are expensive
+///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_StorageWrite_ --gas-report
 contract StorageWriteExample {
     uint256 public total;
 
+    // gas cost: 44321
     function writeMultipleTimes(uint256 amount) external {
         total = total + amount;
         total = total + 1;
     }
 
+    // gas cost: 44077
     function writeOnce(uint256 amount) external {
         uint256 newTotal = total + amount + 1;
         total = newTotal;
