@@ -104,18 +104,23 @@ contract PackingExample {
 
 /// @notice Comparison: repeatedly reading the same storage slot vs caching it in memory.
 ///
+/// reading data from storage is more expensive than reading from memory, so caching a frequently read value can save gas.
+/// Note that using a variable that is read only once, can still be more efficient in some cases (reasons are advanced; opcode, optimizer, ...)
+///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_StorageRead_ --gas-report
 contract StorageReadExample {
     uint256 public feeBps = 30;
     uint256 public amountA = 2 ether;
     uint256 public amountB = 4 ether;
 
+    // gas cost: 7858
     function quoteWithoutCache() external view returns (uint256 totalFee) {
         uint256 feeA = (amountA * feeBps) / 10_000;
         uint256 feeB = (amountB * feeBps) / 10_000;
         totalFee = feeA + feeB;
     }
 
+    // gas cost: 7749
     function quoteWithCache() external view returns (uint256 totalFee) {
         uint256 cachedFeeBps = feeBps;
         uint256 feeA = (amountA * cachedFeeBps) / 10_000;
