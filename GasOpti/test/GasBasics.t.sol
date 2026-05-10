@@ -160,7 +160,7 @@ contract GasBasicsTest is Test {
     //===============================================================
 
     function test_Event_Verbose() public {
-        eventExample.emitVerbose(address(2), 10 ether, bytes32("id-1"), "settlement event with extra metadata");
+        eventExample.emitVerbose(address(2), 10 ether);
     }
 
     function test_Event_Lean() public {

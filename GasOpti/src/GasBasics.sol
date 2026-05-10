@@ -247,23 +247,25 @@ contract VisibilityInputExample {
 
 /// @notice Comparison: verbose events with extra data vs lean events.
 ///
+/// obviously, more content means more gas
+///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_Event_ --gas-report
 contract EventExample {
     event TransferVerbose(
         address indexed from,
         address indexed to,
-        uint256 amount,
-        uint256 timestamp,
-        bytes32 indexed transferId,
-        string note
+        address indexed toBackup,
+        uint256 amount
     );
 
     event TransferLean(address indexed from, address indexed to, uint256 amount);
 
-    function emitVerbose(address to, uint256 amount, bytes32 transferId, string calldata note) external {
-        emit TransferVerbose(msg.sender, to, amount, block.timestamp, transferId, note);
+    // gas cost: 24363
+    function emitVerbose(address to, uint256 amount) external {
+        emit TransferVerbose(msg.sender, to, to, amount);
     }
 
+    // gas cost: 23957
     function emitLean(address to, uint256 amount) external {
         emit TransferLean(msg.sender, to, amount);
     }
