@@ -4,7 +4,6 @@ pragma solidity ^0.8.24;
 import {Test} from "forge-std/Test.sol";
 import {
     AbiEncodingExample,
-    ArrayRemoveExample,
     ArrayInputExample,
     CheckOrderExample,
     ConstantImmutableExample,
@@ -19,7 +18,6 @@ import {
 
 contract GasBasicsTest is Test {
     ArrayInputExample internal arrayInputExample;
-    ArrayRemoveExample internal arrayRemoveExample;
     AbiEncodingExample internal abiEncodingExample;
     CheckOrderExample internal checkOrderExample;
     ConstantImmutableExample internal constantImmutableExample;
@@ -36,7 +34,6 @@ contract GasBasicsTest is Test {
 
     function setUp() public {
         arrayInputExample = new ArrayInputExample();
-        arrayRemoveExample = new ArrayRemoveExample();
         abiEncodingExample = new AbiEncodingExample();
         checkOrderExample = new CheckOrderExample();
         constantImmutableExample = new ConstantImmutableExample();
@@ -116,18 +113,6 @@ contract GasBasicsTest is Test {
 
     function test_ConstantImmutable_ConstantConfig() public view {
         constantImmutableExample.quoteWithConstantConfig(1 ether);
-    }
-
-    //===============================================================
-
-    function test_ArrayRemove_Shift() public {
-        arrayRemoveExample.removeWithShift(2);
-        arrayRemoveExample.getLength();
-    }
-
-    function test_ArrayRemove_SwapAndPop() public {
-        arrayRemoveExample.removeWithSwapAndPop(2);
-        arrayRemoveExample.getLength();
     }
 
     //===============================================================

@@ -161,44 +161,6 @@ contract ConstantImmutableExample {
     }
 }
 
-/// @notice Comparison: shifting array elements on removal vs swap-and-pop.
-///
-/// swap-and-pop does not preserve order but is usually much cheaper.
-///
-/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_ArrayRemove_ --gas-report
-contract ArrayRemoveExample {
-    uint256[] internal positions;
-
-    constructor() {
-        for (uint256 i = 1; i <= 8; ++i) {
-            positions.push(i);
-        }
-    }
-
-    function removeWithShift(uint256 index) external {
-        uint256 length = positions.length;
-        require(index < length, "index out of bounds");
-
-        for (uint256 i = index; i < length - 1; ++i) {
-            positions[i] = positions[i + 1];
-        }
-
-        positions.pop();
-    }
-
-    function removeWithSwapAndPop(uint256 index) external {
-        uint256 length = positions.length;
-        require(index < length, "index out of bounds");
-
-        positions[index] = positions[length - 1];
-        positions.pop();
-    }
-
-    function getLength() external view returns (uint256) {
-        return positions.length;
-    }
-}
-
 /// @notice Comparison: dynamic string identifiers vs fixed-size bytes32 identifiers.
 ///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_IdentifierType_ --gas-report
