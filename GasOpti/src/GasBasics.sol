@@ -70,25 +70,6 @@ contract ArrayInputExample {
     }
 }
 
-/// @notice Comparison: standard checked loop increments vs unchecked increments when overflow cannot happen.
-/// Run: forge test --match-path test/GasBasics.t.sol --match-test test_Loop_ --gas-report
-contract LoopExample {
-    function sumChecked(uint256 limit) external pure returns (uint256 total) {
-        for (uint256 i = 0; i < limit; ++i) {
-            total += i;
-        }
-    }
-
-    function sumUnchecked(uint256 limit) external pure returns (uint256 total) {
-        for (uint256 i = 0; i < limit;) {
-            total += i;
-            unchecked {
-                ++i;
-            }
-        }
-    }
-}
-
 /// @notice Comparison: unpacked storage structs vs tightly packed values that share fewer storage slots.
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_Packing_ --gas-report
 contract PackingExample {

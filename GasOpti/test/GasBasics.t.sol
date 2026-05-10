@@ -5,14 +5,12 @@ import {Test} from "forge-std/Test.sol";
 import {
     ArrayInputExample,
     CustomErrorExample,
-    LoopExample,
     PackingExample
 } from "../src/GasBasics.sol";
 
 contract GasBasicsTest is Test {
     ArrayInputExample internal arrayInputExample;
     CustomErrorExample internal customErrorExample;
-    LoopExample internal loopExample;
     PackingExample internal packingExample;
 
     uint256[] internal values;
@@ -20,7 +18,6 @@ contract GasBasicsTest is Test {
     function setUp() public {
         arrayInputExample = new ArrayInputExample();
         customErrorExample = new CustomErrorExample();
-        loopExample = new LoopExample();
         packingExample = new PackingExample();
         values.push(1);
     }
@@ -51,18 +48,6 @@ contract GasBasicsTest is Test {
 
     function test_ArrayInput_Storage() public view {
         arrayInputExample.sumStorage();
-    }
-
-    //===============================================================
-
-    function test_Loop_CheckedIncrement() public view {
-        uint256 total = loopExample.sumChecked(20);
-        assertEq(total, 190);
-    }
-
-    function test_Loop_UncheckedIncrement() public view {
-        uint256 total = loopExample.sumUnchecked(20);
-        assertEq(total, 190);
     }
 
     //===============================================================
