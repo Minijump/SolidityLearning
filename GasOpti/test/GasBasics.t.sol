@@ -110,8 +110,12 @@ contract GasBasicsTest is Test {
         constantImmutableExample.quoteWithStorageConfig(1 ether);
     }
 
-    function test_ConstantImmutable_ImmutableConstantConfig() public view {
-        constantImmutableExample.quoteWithImmutableAndConstant(1 ether);
+    function test_ConstantImmutable_ImmutableConfig() public view {
+        constantImmutableExample.quoteWithImmutableConfig(1 ether);
+    }
+
+    function test_ConstantImmutable_ConstantConfig() public view {
+        constantImmutableExample.quoteWithConstantConfig(1 ether);
     }
 
     //===============================================================

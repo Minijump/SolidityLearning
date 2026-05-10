@@ -35,7 +35,7 @@ contract CustomErrorExample {
 /// 
 /// memory copy the data, calldata read the data directly from calldata.
 /// using storage instead of input is even more expensive.
-/// calldata < memory << storage
+/// gas costs: calldata < memory << storage
 ///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_ArrayInput_ --gas-report
 contract ArrayInputExample {
@@ -131,24 +131,33 @@ contract StorageReadExample {
 
 /// @notice Comparison: storage config values vs constant and immutable values.
 ///
+/// usage of immutable and constant variables is more efficient than 'simple' storage variables
+/// gas costs: constant < immutable << storage
+///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_ConstantImmutable_ --gas-report
 contract ConstantImmutableExample {
     uint256 public feeBpsStorage = 30;
     uint256 public denominatorStorage = 10_000;
-
-    uint256 public immutable feeBpsImmutable;
+    uint256 public immutable denominatorImmutable;
     uint256 public constant DENOMINATOR_CONSTANT = 10_000;
 
     constructor() {
-        feeBpsImmutable = 30;
+        denominatorImmutable = 10_000;
     }
 
+    // gas cost: 5218
     function quoteWithStorageConfig(uint256 amount) external view returns (uint256) {
         return (amount * feeBpsStorage) / denominatorStorage;
     }
 
-    function quoteWithImmutableAndConstant(uint256 amount) external view returns (uint256) {
-        return (amount * feeBpsImmutable) / DENOMINATOR_CONSTANT;
+    // gas cost: 3184
+    function quoteWithImmutableConfig(uint256 amount) external view returns (uint256) {
+        return (amount * feeBpsStorage) / denominatorImmutable;
+    }
+
+    // gas cost: 3140
+    function quoteWithConstantConfig(uint256 amount) external view returns (uint256) {
+        return (amount * feeBpsStorage) / DENOMINATOR_CONSTANT;
     }
 }
 
