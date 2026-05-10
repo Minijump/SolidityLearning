@@ -163,15 +163,20 @@ contract ConstantImmutableExample {
 
 /// @notice Comparison: dynamic string identifiers vs fixed-size bytes32 identifiers.
 ///
+/// bytes are more efficient for static data, but less for dynamic, are less readable and need more validation work, ...
+/// common good practice is to Use bytes32 for fixed-size keys/IDs. (or when it is really needed)
+///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_IdentifierType_ --gas-report
 contract IdentifierTypeExample {
     mapping(string => uint256) public byString;
     mapping(bytes32 => uint256) public byBytes32;
 
+    // gas cost: 44868
     function setByString(string calldata id, uint256 value) external {
         byString[id] = value;
     }
 
+    // gas cost: 44282
     function setByBytes32(bytes32 id, uint256 value) external {
         byBytes32[id] = value;
     }
