@@ -149,11 +149,11 @@ contract GasBasicsTest is Test {
 
     //===============================================================
 
-    function test_VisibilityInput_PublicMemory() public view {
+    function test_VisibilityInput_Public() public view {
         visibilityInputExample.sumPublic(values);
     }
 
-    function test_VisibilityInput_ExternalCalldata() public view {
+    function test_VisibilityInput_External() public view {
         visibilityInputExample.sumExternal(values);
     }
 
