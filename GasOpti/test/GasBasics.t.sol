@@ -38,6 +38,11 @@ contract GasBasicsTest is Test {
         assertEq(customErrorExample.value(), 42);
     }
 
+    function test_CustomError_LargeRequireString() public {
+        customErrorExample.setWithRequireWithALongErrorMessage(42);
+        assertEq(customErrorExample.value(), 42);
+    }
+
     function test_CustomError_CustomError() public {
         customErrorExample.setWithCustomError(42);
         assertEq(customErrorExample.value(), 42);

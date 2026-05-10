@@ -4,15 +4,27 @@ pragma solidity ^0.8.24;
 error ValueTooLarge(uint256 provided, uint256 maxAllowed);
 
 /// @notice Comparison: long revert strings vs custom errors.
+///
+/// In the following example, the custom error is more gas efficient than the long revert string,
+/// but slightly more expensive than the short revert string
+///
 /// Run: forge test --match-path test/GasBasics.t.sol --match-test test_CustomError_ --gas-report
 contract CustomErrorExample {
     uint256 public value;
 
+    /// gas cost: 43744
     function setWithRequire(uint256 newValue) external {
-        require(newValue <= 100, "value too large");
+        require(newValue <= 100, "Too large");
         value = newValue;
     }
 
+    /// gas cost: 43788
+    function setWithRequireWithALongErrorMessage(uint256 newValue) external {
+        require(newValue <= 100, "value too large, and this error message is also very laaaarge");
+        value = newValue;
+    }
+
+    /// gas cost: 43766
     function setWithCustomError(uint256 newValue) external {
         if (newValue > 100) revert ValueTooLarge(newValue, 100);
         value = newValue;
