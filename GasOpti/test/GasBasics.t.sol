@@ -43,22 +43,22 @@ contract GasBasicsTest is Test {
         assertEq(customErrorExample.value(), 42);
     }
 
-    function test_ArrayInput_Memory() public {
+    function test_ArrayInput_Memory() public view {
         uint256 total = arrayInputExample.sumMemory(values);
         assertEq(total, 87);
     }
 
-    function test_ArrayInput_Calldata() public {
+    function test_ArrayInput_Calldata() public view {
         uint256 total = arrayInputExample.sumCalldata(values);
         assertEq(total, 87);
     }
 
-    function test_Loop_CheckedIncrement() public {
+    function test_Loop_CheckedIncrement() public view {
         uint256 total = loopExample.sumChecked(20);
         assertEq(total, 190);
     }
 
-    function test_Loop_UncheckedIncrement() public {
+    function test_Loop_UncheckedIncrement() public view {
         uint256 total = loopExample.sumUnchecked(20);
         assertEq(total, 190);
     }

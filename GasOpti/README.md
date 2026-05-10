@@ -1,13 +1,6 @@
 # GasOpti
 
-Short Foundry playground for common Solidity gas optimization patterns.
-
-The goal is not to micro-optimize everything. It is to recognize the most common low-effort wins:
-
-- prefer `calldata` over `memory` for read-only external inputs
-- prefer custom errors over long revert strings
-- use `unchecked` increments only when overflow is impossible
-- pack storage values when they naturally fit in the same slot
+Short Foundry playground for common Solidity gas optimization patterns. The goal is not to micro-optimize everything. It is to recognize the most common low-effort wins:
 
 ## Structure
 
