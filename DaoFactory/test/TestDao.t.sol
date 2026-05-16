@@ -41,7 +41,7 @@ contract DaoTest is Test {
         address nonTokenHolder = makeAddr("nonTokenHolder");
         _initUser(nonTokenHolder, 100 ether);
         vm.startPrank(nonTokenHolder);
-        vm.expectRevert("Only token holders can perform this action");
+        vm.expectRevert(Dao.NotTokenHolder.selector);
         dao.createProposal("Test Proposal", "This is a test proposal.");
         vm.stopPrank();
     }
