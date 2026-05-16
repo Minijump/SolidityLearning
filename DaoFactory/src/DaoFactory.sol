@@ -5,7 +5,7 @@ import {Dao} from "./Dao.sol";
 
 
 contract DaoFactory {
-    function createDao(string memory _name, string memory _symbol) external returns (address) {
+    function createDao(string calldata _name, string calldata _symbol) external returns (address) {
         Dao newDao = new Dao(msg.sender, _name, _symbol);
         return address(newDao);
     }
