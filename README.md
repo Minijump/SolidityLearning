@@ -67,10 +67,11 @@ Folder to learn how to inspect a blockchain (smart contract, transactions, ...)
 Compact Foundry playground for common Solidity gas optimizations with concise examples and gas-report-driven comparisons.
 
 ## TODOs
-- Look at one immunefi project? try run tests locally, play the whitehat, ...
-- Personal project (ideas: subscription payment contracts, 'mailbox' with whitelisted users, ...)
+- Personal project: subscription factory (subscribe, pay, cancel, hasValidSub, ...)
 - cyfrin advanced foundry (complete folder above if needed)
 - cyfrin smart contracts security (complete security folder if needed)
+- open zeppelin cheatsheets
+- play withehat on one of immundefi project (maybe open zeppelin?)
 - Solidity x Odoo ?
 
 ## Cheatsheets
