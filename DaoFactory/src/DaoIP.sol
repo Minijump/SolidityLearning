@@ -7,6 +7,7 @@ error AlreadyVoted();
 error DidNotVote();
 error DeadlineNotReached();
 error ClosedIP();
+error NotTokenHolder();
 
 contract DaoIP {
     string public name;
@@ -28,19 +29,29 @@ contract DaoIP {
     }
 
     modifier onlyTokenHolder() {
-        require(daoToken.balanceOf(msg.sender) > 0, "Only token holders can perform this action");
+        _onlyTokenHolder(msg.sender);
         _;
+    }
+
+    function _onlyTokenHolder(address user) internal view {
+        if (daoToken.balanceOf(user) == 0) {
+            revert NotTokenHolder();
+        }
+    }
+
+    modifier openIP() {
+        _openIP();
+        _;
+    }
+
+    function _openIP() internal view {
+        if (!isOpen()) {
+            revert ClosedIP();
+        }
     }
 
     function isOpen() public view returns (bool) {
         return block.timestamp < i_deadline;
-    }
-
-    modifier openIP() {
-        if (!isOpen()) {
-            revert ClosedIP();
-        }
-        _;
     }
 
     function vote(Vote _vote) external onlyTokenHolder openIP{
@@ -59,7 +70,8 @@ contract DaoIP {
     }
 
     function getResults() external view returns (uint256 approveCount, uint256 rejectCount, uint256 abstainCount) {
-        for (uint256 i = 0; i < voters.length; i++) {
+        uint256 totalVotes = voters.length;
+        for (uint256 i = 0; i < totalVotes; i++) {
             address voter = voters[i];
             Vote voterVote = votes[voter];
             if (voterVote == Vote.Approve) {
