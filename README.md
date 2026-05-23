@@ -66,8 +66,10 @@ Folder to learn how to inspect a blockchain (smart contract, transactions, ...)
 ### GasOpti [Me/Copilot]
 Compact Foundry playground for common Solidity gas optimizations with concise examples and gas-report-driven comparisons.
 
+### SubFactory [Me]
+Allow external users to create subscription system. The goal is to help people that want to have a business based on subscription but can not deal with a payment infrastructure,... This project is supposed to allow everybody to create subscritption plan and check if somebody has a valid sub, ...
+
 ## TODOs
-- Personal project: subscription factory (subscribe, pay, cancel, hasValidSub, ...)
 - cyfrin advanced foundry (complete folder above if needed)
 - cyfrin smart contracts security (complete security folder if needed)
 - open zeppelin cheatsheets
