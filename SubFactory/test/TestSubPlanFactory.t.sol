@@ -24,6 +24,7 @@ contract SubPlanFactoryTest is Test {
         assertEq(subPlan.subAmount(), subAmount, "SubAmount should be set correctly");
         assertEq(subPlan.subDuration(), subDuration, "SubDuration should be set correctly");
         assertEq(subPlan.owner(), address(this), "Owner should be the caller");
+        assertTrue(subPlan.isOpen(), "SubPlan should be open by default");
     }
 
     function testCreateSubPlanFor() external {
@@ -34,5 +35,6 @@ contract SubPlanFactoryTest is Test {
         assertEq(subPlan.subAmount(), subAmount, "SubAmount should be set correctly");
         assertEq(subPlan.subDuration(), subDuration, "SubDuration should be set correctly");
         assertEq(subPlan.owner(), owner, "Owner should be the specified address");
+        assertTrue(subPlan.isOpen(), "SubPlan should be open by default");
     }
 }

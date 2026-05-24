@@ -7,6 +7,7 @@ contract SubPlan {
     uint256 public subAmount;
     uint256 public subDuration;
     address public owner; //could use open zeppelin's Ownable, at first do it on our own
+    bool public isOpen;
 
     mapping(address => uint256) public subPayments;
 
@@ -14,10 +15,12 @@ contract SubPlan {
         subAmount = _subAmount;
         subDuration = _subDuration;
         owner = _owner;
+        isOpen = true;
     }
 
     error InvalidSubscriptionAmount();
     error NotOwner();
+    error SubscriptionPlanClosed();
 
     modifier onlyOwner() {
         _onlyOwner();
@@ -27,6 +30,17 @@ contract SubPlan {
     function _onlyOwner() internal view {
         if (msg.sender != owner) {
             revert NotOwner();
+        }
+    }
+
+    modifier OpenOnly() {
+        _isOpen();
+        _;
+    }
+
+    function _isOpen() internal view {
+        if (!isOpen) {
+            revert SubscriptionPlanClosed();
         }
     }
 
@@ -42,7 +56,7 @@ contract SubPlan {
         _subscribe();
     }
 
-    function _subscribe() internal {
+    function _subscribe() internal OpenOnly {
         if (msg.value != subAmount) {
             revert InvalidSubscriptionAmount();
         }
@@ -63,6 +77,14 @@ contract SubPlan {
 
     function editOwner(address newOwner) external onlyOwner {
         owner = newOwner;
+    }
+
+    function close() external onlyOwner {
+        isOpen = false;
+    }
+
+    function open() external onlyOwner {
+        isOpen = true;
     }
 
     function isSubscribed(address _subscriber) external view returns (bool) {

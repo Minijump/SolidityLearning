@@ -45,6 +45,15 @@ contract SubPlanTest is Test {
         subPlan.subscribe{value: subAmount - 0.01 ether}();
     }
 
+    function testSubscribeToClosedPlan() external {
+        vm.prank(owner);
+        subPlan.close();
+
+        vm.prank(subscriber);
+        vm.expectRevert(SubPlan.SubscriptionPlanClosed.selector);
+        subPlan.subscribe{value: subAmount}();
+    }
+
     function testReceiveSubscribe() external {
         vm.prank(subscriber);
         (bool success, ) = address(subPlan).call{value: subAmount}("");
@@ -177,5 +186,39 @@ contract SubPlanTest is Test {
         vm.prank(subscriber);
         vm.expectRevert(SubPlan.NotOwner.selector);
         subPlan.editOwner(newOwner);
+    }
+
+    function testClose() external {
+        vm.prank(owner);
+        subPlan.close();
+
+        bool isOpen = subPlan.isOpen();
+        assertFalse(isOpen, "Plan should be closed");
+    }
+
+    function testCloseByNonOwner() external {
+        vm.prank(subscriber);
+        vm.expectRevert(SubPlan.NotOwner.selector);
+        subPlan.close();
+    }
+
+    function testOpenClosedPlan() external {
+        vm.prank(owner);
+        subPlan.close();
+
+        vm.prank(owner);
+        subPlan.open();
+
+        bool isOpen = subPlan.isOpen();
+        assertTrue(isOpen, "Plan should be open");
+    }
+
+    function testOpenByNonOwner() external {
+        vm.prank(owner);
+        subPlan.close();
+
+        vm.prank(subscriber);
+        vm.expectRevert(SubPlan.NotOwner.selector);
+        subPlan.open();
     }
 }
