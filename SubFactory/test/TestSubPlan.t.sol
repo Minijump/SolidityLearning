@@ -99,4 +99,29 @@ contract SubPlanTest is Test {
         vm.expectRevert(SubPlan.NotOwner.selector);
         subPlan.withdraw();
     }
+
+    function testIsSubscribed() external {
+        vm.prank(subscriber);
+        subPlan.subscribe{value: subAmount}();
+
+        bool isSubscribed = subPlan.isSubscribed(subscriber);
+
+        assertTrue(isSubscribed, "Subscriber should be subscribed");
+    }
+
+    function testIsSubscribedAfterDuration() external {
+        vm.prank(subscriber);
+        subPlan.subscribe{value: subAmount}();
+
+        vm.warp(block.timestamp + subDuration + 1);
+        bool isSubscribed = subPlan.isSubscribed(subscriber);
+
+        assertFalse(isSubscribed, "Subscriber should not be subscribed after duration");
+    }
+
+    function testIsSubscribedWithoutSubscription() external view{
+        bool isSubscribed = subPlan.isSubscribed(subscriber);
+
+        assertFalse(isSubscribed, "Subscriber should not be subscribed without subscription");
+    }
 }

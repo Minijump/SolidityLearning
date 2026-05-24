@@ -52,4 +52,9 @@ contract SubPlan {
     function withdraw() external onlyOwner {
         payable(owner).transfer(address(this).balance);
     }
+
+    function isSubscribed(address _subscriber) external view returns (bool) {
+        uint256 subscriptionTime = subPayments[_subscriber];
+        return subscriptionTime != 0 && block.timestamp < subscriptionTime + subDuration;
+    }
 }
