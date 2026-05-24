@@ -53,6 +53,18 @@ contract SubPlan {
         payable(owner).transfer(address(this).balance);
     }
 
+    function editSubAmount(uint256 newSubAmount) external onlyOwner {
+        subAmount = newSubAmount;
+    }
+
+    function editSubDuration(uint256 newSubDuration) external onlyOwner {
+        subDuration = newSubDuration;
+    }
+
+    function editOwner(address newOwner) external onlyOwner {
+        owner = newOwner;
+    }
+
     function isSubscribed(address _subscriber) external view returns (bool) {
         uint256 subscriptionTime = subPayments[_subscriber];
         return subscriptionTime != 0 && block.timestamp < subscriptionTime + subDuration;

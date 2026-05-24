@@ -124,4 +124,58 @@ contract SubPlanTest is Test {
 
         assertFalse(isSubscribed, "Subscriber should not be subscribed without subscription");
     }
+
+    function testEditSubAmount() external {
+        uint256 newSubAmount = 2 ether;
+
+        vm.prank(owner);
+        subPlan.editSubAmount(newSubAmount);
+
+        uint256 currentSubAmount = subPlan.subAmount();
+        assertEq(currentSubAmount, newSubAmount, "Subscription amount should be updated");
+    }
+
+    function testEditSubAmountByNonOwner() external {
+        uint256 newSubAmount = 2 ether;
+
+        vm.prank(subscriber);
+        vm.expectRevert(SubPlan.NotOwner.selector);
+        subPlan.editSubAmount(newSubAmount);
+    }
+
+    function testEditSubDuration() external {
+        uint256 newSubDuration = 60 days;
+
+        vm.prank(owner);
+        subPlan.editSubDuration(newSubDuration);
+
+        uint256 currentSubDuration = subPlan.subDuration();
+        assertEq(currentSubDuration, newSubDuration, "Subscription duration should be updated");
+    }
+
+    function testEditSubDurationByNonOwner() external {
+        uint256 newSubDuration = 60 days;
+
+        vm.prank(subscriber);
+        vm.expectRevert(SubPlan.NotOwner.selector);
+        subPlan.editSubDuration(newSubDuration);
+    }
+
+    function testEditOwner() external {
+        address newOwner = makeAddr('newOwner');
+
+        vm.prank(owner);
+        subPlan.editOwner(newOwner);
+
+        address currentOwner = subPlan.owner();
+        assertEq(currentOwner, newOwner, "Owner should be updated");
+    }
+
+    function testEditOwnerByNonOwner() external {
+        address newOwner = makeAddr('newOwner');
+
+        vm.prank(subscriber);
+        vm.expectRevert(SubPlan.NotOwner.selector);
+        subPlan.editOwner(newOwner);
+    }
 }
