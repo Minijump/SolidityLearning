@@ -78,4 +78,25 @@ contract SubPlanTest is Test {
         assertFalse(success, "Call should have failed");
         assertEq(data, abi.encodeWithSelector(SubPlan.InvalidSubscriptionAmount.selector), "Revert reason mismatch");
     }
+
+    function testWithdraw() external {
+        vm.prank(subscriber);
+        subPlan.subscribe{value: subAmount}();
+        uint256 ownerBalanceBefore = owner.balance;
+
+        vm.prank(owner);
+        subPlan.withdraw();
+
+        uint256 ownerBalanceAfter = owner.balance;
+        assertEq(ownerBalanceAfter, ownerBalanceBefore + subAmount, "Owner should receive the withdrawn amount");
+    }
+
+    function testWithdrawByNonOwner() external {
+        vm.prank(subscriber);
+        subPlan.subscribe{value: subAmount}();
+
+        vm.prank(subscriber);
+        vm.expectRevert(SubPlan.NotOwner.selector);
+        subPlan.withdraw();
+    }
 }

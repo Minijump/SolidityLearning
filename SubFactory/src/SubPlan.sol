@@ -17,6 +17,18 @@ contract SubPlan {
     }
 
     error InvalidSubscriptionAmount();
+    error NotOwner();
+
+    modifier onlyOwner() {
+        _onlyOwner();
+        _;
+    }
+
+    function _onlyOwner() internal view {
+        if (msg.sender != owner) {
+            revert NotOwner();
+        }
+    }
 
     receive() external payable {
         _subscribe();
@@ -35,5 +47,9 @@ contract SubPlan {
             revert InvalidSubscriptionAmount();
         }
         subPayments[msg.sender] = block.timestamp;
+    }
+
+    function withdraw() external onlyOwner {
+        payable(owner).transfer(address(this).balance);
     }
 }
