@@ -8,9 +8,32 @@ contract SubPlan {
     uint256 public subDuration;
     address public owner; //could use open zeppelin's Ownable, at first do it on our own
 
+    mapping(address => uint256) public subPayments;
+
     constructor(uint256 _subAmount, uint256 _subDuration, address _owner) {
         subAmount = _subAmount;
         subDuration = _subDuration;
         owner = _owner;
+    }
+
+    error InvalidSubscriptionAmount();
+
+    receive() external payable {
+        _subscribe();
+    }
+
+    fallback() external payable {
+        _subscribe();
+    }
+
+    function subscribe() external payable {
+        _subscribe();
+    }
+
+    function _subscribe() internal {
+        if (msg.value != subAmount) {
+            revert InvalidSubscriptionAmount();
+        }
+        subPayments[msg.sender] = block.timestamp;
     }
 }
