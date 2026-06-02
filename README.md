@@ -69,8 +69,10 @@ Compact Foundry playground for common Solidity gas optimizations with concise ex
 ### SubFactory [Me]
 Allow external users to create subscription system. The goal is to help people that want to have a business based on subscription but can not deal with a payment infrastructure,... This project is supposed to allow everybody to create subscritption plan and check if somebody has a valid sub, ...
 
+### ERC20 token [Cyfrin]
+This is a chapter of the 'adavnced foundry' cyfrin's course. The goal is to discover the erc20 tokens.
+
 ## TODOs
-- cyfrin advanced foundry (complete folder above if needed)
 - cyfrin smart contracts security (complete security folder if needed)
 - open zeppelin cheatsheets
 - play withehat on one of immundefi project (maybe open zeppelin?)
