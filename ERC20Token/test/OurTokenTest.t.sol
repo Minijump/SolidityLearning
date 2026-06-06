@@ -5,13 +5,12 @@ pragma solidity ^0.8.19;
 import {DeployOurToken} from "../script/DeployOurToken.s.sol";
 import {OurToken} from "../src/OurToken.sol";
 import {Test, console} from "forge-std/Test.sol";
-import {ZkSyncChainChecker} from "lib/foundry-devops/src/ZkSyncChainChecker.sol";
 
 interface MintableToken {
     function mint(address, uint256) external;
 }
 
-contract OurTokenTest is Test, ZkSyncChainChecker {
+contract OurTokenTest is Test {
     uint256 BOB_STARTING_AMOUNT = 100 ether;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 ether; // 1 million tokens with 18 decimal places
 
@@ -23,12 +22,7 @@ contract OurTokenTest is Test, ZkSyncChainChecker {
 
     function setUp() public {
         deployer = new DeployOurToken();
-        if (!isZkSyncChain()) {
-            ourToken = deployer.run();
-        } else {
-            ourToken = new OurToken(INITIAL_SUPPLY);
-            ourToken.transfer(msg.sender, INITIAL_SUPPLY);
-        }
+        ourToken = deployer.run();
 
         bob = makeAddr("bob");
         alice = makeAddr("alice");
@@ -49,8 +43,6 @@ contract OurTokenTest is Test, ZkSyncChainChecker {
     function testAllowances() public {
         uint256 initialAllowance = 1000;
 
-        // Bob approves Alice to spend tokens on his behalf
-
         vm.prank(bob);
         ourToken.approve(alice, initialAllowance);
         uint256 transferAmount = 500;
@@ -60,6 +52,4 @@ contract OurTokenTest is Test, ZkSyncChainChecker {
         assertEq(ourToken.balanceOf(alice), transferAmount);
         assertEq(ourToken.balanceOf(bob), BOB_STARTING_AMOUNT - transferAmount);
     }
-
-    // can you get the coverage up?
 }
