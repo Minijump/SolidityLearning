@@ -72,6 +72,9 @@ Allow external users to create subscription system. The goal is to help people t
 ### ERC20 token [Cyfrin]
 This is a chapter of the 'adavnced foundry' cyfrin's course. The goal is to discover the erc20 tokens.
 
+### SimpleNft [Cyfrin]
+Chapter of the 'adavnced foundry' cyfrin's course. The goal is to create a basic Nft collection to understand how it works, ...
+
 ## TODOs
 - cyfrin smart contracts security (complete security folder if needed)
 - open zeppelin cheatsheets
