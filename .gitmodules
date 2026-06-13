@@ -46,3 +46,9 @@
 [submodule "SimpleNft/lib/openzeppelin-contracts"]
 	path = SimpleNft/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "DefiStableCoin/lib/forge-std"]
+	path = DefiStableCoin/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "DefiStableCoin/lib/openzeppelin-contracts"]
+	path = DefiStableCoin/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
