@@ -3,22 +3,22 @@
 pragma solidity ^0.8.19;
 
 // import { OracleLib, AggregatorV3Interface } from "./libraries/OracleLib.sol";
-// import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-// import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-// import { DecentralizedStableCoin } from "./DecentralizedStableCoin.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { DecentralizedStableCoin } from "./DecentralizedStableCoin.sol";
 
-// /*
-//  * The system is designed to be as minimal as possible, and have the tokens maintain a 1 token == $1 peg at all times.
-//  * This is a stablecoin with the properties:
-//  * - Exogenously Collateralized
-//  * - Dollar Pegged
-//  * - Algorithmically Stable
-//  */
-// contract DSCEngine is ReentrancyGuard {
-//     error DSCEngine__TokenAddressesAndPriceFeedAddressesAmountsDontMatch();
-//     error DSCEngine__NeedsMoreThanZero();
-//     error DSCEngine__TokenNotAllowed(address token);
-//     error DSCEngine__TransferFailed();
+/*
+ * The system is designed to be as minimal as possible, and have the tokens maintain a 1 token == $1 peg at all times.
+ * This is a stablecoin with the properties:
+ * - Exogenously Collateralized
+ * - Dollar Pegged
+ * - Algorithmically Stable
+ */
+contract DSCEngine is ReentrancyGuard {
+    error DSCEngine__TokenAddressesAndPriceFeedAddressesAmountsDontMatch();
+    error DSCEngine__NeedsMoreThanZero();
+    error DSCEngine__TokenNotAllowed(address token);
+    error DSCEngine__TransferFailed();
 //     error DSCEngine__BreaksHealthFactor(uint256 healthFactorValue);
 //     error DSCEngine__MintFailed();
 //     error DSCEngine__HealthFactorOk();
@@ -26,7 +26,7 @@ pragma solidity ^0.8.19;
 
 //     using OracleLib for AggregatorV3Interface;
 
-//     DecentralizedStableCoin private immutable i_dsc;
+    DecentralizedStableCoin private immutable i_dsc;
 
 //     uint256 private constant LIQUIDATION_THRESHOLD = 50; // This means you need to be 200% over-collateralized
 //     uint256 private constant LIQUIDATION_BONUS = 10; // This means you get assets at a 10% discount when liquidating
@@ -36,40 +36,38 @@ pragma solidity ^0.8.19;
 //     uint256 private constant ADDITIONAL_FEED_PRECISION = 1e10;
 //     uint256 private constant FEED_PRECISION = 1e8;
 
-//     mapping(address collateralToken => address priceFeed) private s_priceFeeds;
-//     mapping(address user => mapping(address collateralToken => uint256 amount)) private s_collateralDeposited;
+    mapping(address collateralToken => address priceFeed) private s_priceFeeds;
+    mapping(address user => mapping(address collateralToken => uint256 amount)) private s_collateralDeposited;
 //     mapping(address user => uint256 amount) private s_DSCMinted;
 //     address[] private s_collateralTokens;
 
-//     event CollateralDeposited(address indexed user, address indexed token, uint256 indexed amount);
+    event CollateralDeposited(address indexed user, address indexed token, uint256 indexed amount);
 //     event CollateralRedeemed(address indexed redeemFrom, address indexed redeemTo, address token, uint256 amount); 
 
-//     modifier moreThanZero(uint256 amount) {
-//         if (amount == 0) {
-//             revert DSCEngine__NeedsMoreThanZero();
-//         }
-//         _;
-//     }
+    modifier moreThanZero(uint256 amount) {
+        if (amount == 0) {
+            revert DSCEngine__NeedsMoreThanZero();
+        }
+        _;
+    }
 
-//     modifier isAllowedToken(address token) {
-//         if (s_priceFeeds[token] == address(0)) {
-//             revert DSCEngine__TokenNotAllowed(token);
-//         }
-//         _;
-//     }
+    modifier isAllowedToken(address token) {
+        if (s_priceFeeds[token] == address(0)) {
+            revert DSCEngine__TokenNotAllowed(token);
+        }
+        _;
+    }
 
-//     constructor(address[] memory tokenAddresses, address[] memory priceFeedAddresses, address dscAddress) {
-//         if (tokenAddresses.length != priceFeedAddresses.length) {
-//             revert DSCEngine__TokenAddressesAndPriceFeedAddressesAmountsDontMatch();
-//         }
-//         // These feeds will be the USD pairs
-//         // For example ETH / USD or MKR / USD
-//         for (uint256 i = 0; i < tokenAddresses.length; i++) {
-//             s_priceFeeds[tokenAddresses[i]] = priceFeedAddresses[i];
-//             s_collateralTokens.push(tokenAddresses[i]);
-//         }
-//         i_dsc = DecentralizedStableCoin(dscAddress);
-//     }
+    constructor(address[] memory tokenAddresses, address[] memory priceFeedAddresses, address dscAddress) {
+        if (tokenAddresses.length != priceFeedAddresses.length) {
+            revert DSCEngine__TokenAddressesAndPriceFeedAddressesAmountsDontMatch();
+        }
+        for (uint256 i = 0; i < tokenAddresses.length; i++) {
+            s_priceFeeds[tokenAddresses[i]] = priceFeedAddresses[i];
+            s_collateralTokens.push(tokenAddresses[i]);
+        }
+        i_dsc = DecentralizedStableCoin(dscAddress);
+    }
 
 //     /*
 //      * @param tokenCollateralAddress: The ERC20 token address of the collateral you're depositing
@@ -200,26 +198,26 @@ pragma solidity ^0.8.19;
 //         }
 //     }
 
-//     /*
-//      * @param tokenCollateralAddress: The ERC20 token address of the collateral you're depositing
-//      * @param amountCollateral: The amount of collateral you're depositing
-//      */
-//     function depositCollateral(
-//         address tokenCollateralAddress,
-//         uint256 amountCollateral
-//     )
-//         public
-//         moreThanZero(amountCollateral)
-//         nonReentrant
-//         isAllowedToken(tokenCollateralAddress)
-//     {
-//         s_collateralDeposited[msg.sender][tokenCollateralAddress] += amountCollateral;
-//         emit CollateralDeposited(msg.sender, tokenCollateralAddress, amountCollateral);
-//         bool success = IERC20(tokenCollateralAddress).transferFrom(msg.sender, address(this), amountCollateral);
-//         if (!success) {
-//             revert DSCEngine__TransferFailed();
-//         }
-//     }
+    /*
+     * @param tokenCollateralAddress: The ERC20 token address of the collateral you're depositing
+     * @param amountCollateral: The amount of collateral you're depositing
+     */
+    function depositCollateral(
+        address tokenCollateralAddress,
+        uint256 amountCollateral
+    )
+        public
+        moreThanZero(amountCollateral)
+        nonReentrant
+        isAllowedToken(tokenCollateralAddress)
+    {
+        s_collateralDeposited[msg.sender][tokenCollateralAddress] += amountCollateral;
+        emit CollateralDeposited(msg.sender, tokenCollateralAddress, amountCollateral);
+        bool success = IERC20(tokenCollateralAddress).transferFrom(msg.sender, address(this), amountCollateral);
+        if (!success) {
+            revert DSCEngine__TransferFailed();
+        }
+    }
 
 //     function _redeemCollateral(
 //         address tokenCollateralAddress,
@@ -389,4 +387,4 @@ pragma solidity ^0.8.19;
 //     function getHealthFactor(address user) external view returns (uint256) {
 //         return _healthFactor(user);
 //     }
-// }
+}
