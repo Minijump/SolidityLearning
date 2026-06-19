@@ -78,11 +78,5 @@ Chapter of the 'adavnced foundry' cyfrin's course. The goal is to create a basic
 ## TODOs
 - cyfrin smart contracts security (complete security folder if needed)
 - open zeppelin cheatsheets
+- Solidity x Odoo ? (execution of smart contract at recieval/confirmation, order/avenant confirmation on blockchain, trigger of order as soon as transaction is done on blockchain, ...)
 - play withehat on one of immundefi project (maybe open zeppelin?)
-- Solidity x Odoo ?
-
-## Cheatsheets
-
-For detailed cheatsheets, see the [cheatsheets](./cheatsheets/) folder:
-- **[Foundry Cheatsheet](./cheatsheets/foundry.md)** - Forge, Anvil, and Cast commands
-- **[Solidity Cheatsheet](./cheatsheets/solidity.md)** - Complete Solidity reference with examples
