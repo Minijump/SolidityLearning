@@ -58,3 +58,6 @@
 [submodule "RebaseToken/lib/forge-std"]
 	path = RebaseToken/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "RebaseToken/lib/openzeppelin-contracts"]
+	path = RebaseToken/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
