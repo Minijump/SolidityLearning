@@ -75,8 +75,12 @@ This is a chapter of the 'adavnced foundry' cyfrin's course. The goal is to disc
 ### SimpleNft [Cyfrin]
 Chapter of the 'adavnced foundry' cyfrin's course. The goal is to create a basic Nft collection to understand how it works, ...
 
+### RebaseToken [Cyfrin]
+Chapter of the 'adavnced foundry' cyfrin's course. Creation of a rebase token, crosschain (did not do all the stuffs crosschain, I only watwhed the videos and looked at the smart contracts)
+
 ## TODOs
 - cyfrin smart contracts security (complete security folder if needed)
 - open zeppelin cheatsheets
 - Solidity x Odoo ? (execution of smart contract at recieval/confirmation, order/avenant confirmation on blockchain, trigger of order as soon as transaction is done on blockchain, ...)
+- decentralized ground news ?
 - play withehat on one of immundefi project (maybe open zeppelin?)
