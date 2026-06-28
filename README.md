@@ -76,7 +76,7 @@ This is a chapter of the 'adavnced foundry' cyfrin's course. The goal is to disc
 Chapter of the 'adavnced foundry' cyfrin's course. The goal is to create a basic Nft collection to understand how it works, ...
 
 ### RebaseToken [Cyfrin]
-Chapter of the 'adavnced foundry' cyfrin's course. Creation of a rebase token, crosschain (did not do all the stuffs crosschain, I only watwhed the videos and looked at the smart contracts)
+Chapter of the 'adavnced foundry' cyfrin's course. Creation of a rebase token, crosschain (did not do the crosschain content)
 
 ## TODOs
 - cyfrin smart contracts security (complete security folder if needed)
