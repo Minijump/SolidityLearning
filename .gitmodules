@@ -61,3 +61,6 @@
 [submodule "RebaseToken/lib/openzeppelin-contracts"]
 	path = RebaseToken/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "MerkleAirdrop/lib/forge-std"]
+	path = MerkleAirdrop/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
