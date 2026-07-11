@@ -70,7 +70,7 @@ Compact Foundry playground for common Solidity gas optimizations with concise ex
 Allow external users to create subscription system. The goal is to help people that want to have a business based on subscription but can not deal with a payment infrastructure,... This project is supposed to allow everybody to create subscritption plan and check if somebody has a valid sub, ...
 
 ### Advanced Foundry [Cyfrin]
-I followed the videos and looked at the smart contracts, but nothing else.
+I watched some of the videos and looked at the smart contracts, but nothing else.
 #### ERC20 token
 Discover the erc20 tokens.
 #### SimpleNft
@@ -81,8 +81,6 @@ Creation of a rebase token, crosschain (did not do the crosschain content)
 Creation of an airdrop contract, using Merkle tree.
 #### UpgradeableSmartContract
 Creation of an upgradeable smart contract
-### AccountAbstraction
-Creation of contracts to discover account abstraction principle.
 
 ## TODOs
 - cyfrin smart contracts security (complete security folder if needed) (Watch videos quiclky only, do not copy code, ... Do iy in parallel than other project)
