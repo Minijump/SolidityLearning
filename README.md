@@ -81,6 +81,8 @@ Creation of a rebase token, crosschain (did not do the crosschain content)
 Creation of an airdrop contract, using Merkle tree.
 #### UpgradeableSmartContract
 Creation of an upgradeable smart contract
+### AccountAbstraction
+Creation of contracts to discover account abstraction principle.
 
 ## TODOs
 - cyfrin smart contracts security (complete security folder if needed)
