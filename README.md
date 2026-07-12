@@ -8,7 +8,7 @@ a repo where I add all the small code I did to learn a bit of solidity
 
 [Me] = personal project to gather what I learned until that moment
 
-[Me/Copilot] = personal project that I asked copilot to generate, than exerciced on it.
+[Me/Copilot] = personal project that I asked copilot (or chat gpt) to generate, than exerciced on it.
 
 [Remix] = project was done on remix
 
@@ -82,8 +82,8 @@ Creation of an airdrop contract, using Merkle tree.
 #### UpgradeableSmartContract
 Creation of an upgradeable smart contract
 
-### OpenZeppelin [Me]
-Cheatsheet of openZeppelin most used util. ERC20, SafeERC20, ERC721, ERC1155, AccessControl, Ownable, Pausable, ReentrancyGuard, ...
+### OpenZeppelin [Me/Copilot]
+Cheatsheet of openZeppelin most used util. ERC20, SafeERC20, ERC20Ownable, ERC721, ERC1155, AccessControl, Ownable, Pausable, ReentrancyGuard, ...
 
 ## TODOs
 - Solidity x Odoo ? (execution of smart contract at recieval/confirmation, order/avenant confirmation on blockchain, trigger of order as soon as transaction is done on blockchain, ...)

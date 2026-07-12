@@ -82,3 +82,6 @@
 [submodule "cheatsheets/OpenZeppelin/lib/forge-std"]
 	path = cheatsheets/OpenZeppelin/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "cheatsheets/OpenZeppelin/lib/openzeppelin-contracts"]
+	path = cheatsheets/OpenZeppelin/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
