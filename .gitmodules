@@ -79,3 +79,6 @@
 [submodule "AccountAbstraction/lib/forge-std"]
 	path = AccountAbstraction/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "cheatsheets/OpenZeppelin/lib/forge-std"]
+	path = cheatsheets/OpenZeppelin/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
