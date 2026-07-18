@@ -8,7 +8,6 @@ contract MyBurnableTokenTest is Test {
     MyBurnableToken token;
 
     address alice = address(1);
-    address bob = address(2);
     address smartContract = address(3);
 
     uint256 initialSupply = 1000 ether;
@@ -18,7 +17,6 @@ contract MyBurnableTokenTest is Test {
     function setUp() public {
         token = new MyBurnableToken();
         token.transfer(alice, initialBalance);
-        token.transfer(bob, initialBalance);
         token.transfer(smartContract, initialBalance);
     }
 
