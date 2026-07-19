@@ -83,7 +83,7 @@ Creation of an airdrop contract, using Merkle tree.
 Creation of an upgradeable smart contract
 
 ### OpenZeppelin [Me/Copilot]
-Cheatsheet of openZeppelin most used util. ERC20, SafeERC20, ERC721, ERC1155, AccessControl, Ownable, Pausable, ReentrancyGuard, ...
+Cheatsheet of openZeppelin most used util. ERC20, ERC20Pausable, SafeERC20, ERC721, ReentrancyGuard, AccessControl, Ownable,
 
 ## TODOs
 - Solidity x Odoo ? (execution of smart contract at recieval/confirmation, order/avenant confirmation on blockchain, trigger of order as soon as transaction is done on blockchain, ...)
