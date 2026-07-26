@@ -86,5 +86,4 @@ Creation of an upgradeable smart contract
 Cheatsheet of openZeppelin most used util. ERC20, ERC20Pausable, SafeERC20, ERC721, ReentrancyGuard,Ownable, AccessControl
 
 ## TODOs
-- Solidity x Odoo ? (execution of smart contract at recieval/confirmation, order/avenant confirmation on blockchain, trigger of order as soon as transaction is done on blockchain, ...)
-- play withehat on one of immundefi project (maybe open zeppelin?)
+- play withehat on one of immunefi project => open zeppelin
