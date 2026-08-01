@@ -85,5 +85,10 @@ Creation of an upgradeable smart contract
 ### OpenZeppelin [Me/Copilot]
 Cheatsheet of openZeppelin most used util. ERC20, ERC20Pausable, SafeERC20, ERC721, ReentrancyGuard,Ownable, AccessControl
 
+### WhitehatOpenZeppelin [ME]
+The goal of this project is to 'hack' open zeppelin. I wil create smart contracts tha uses the open zeppelin libraries and try to find bugs in them. I guess this will be impossible but this will give me the opportunity to test, unit test, try, understand, ...
+see https://immunefi.com/bug-bounty/openzeppelin/scope/#top
+testing https://github.com/OpenZeppelin/openzeppelin-contracts?utm_source=immunefi
+
 ## TODOs
 - play withehat on one of immunefi project => open zeppelin
