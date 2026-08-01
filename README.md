@@ -91,4 +91,3 @@ see https://immunefi.com/bug-bounty/openzeppelin/scope/#top
 testing https://github.com/OpenZeppelin/openzeppelin-contracts?utm_source=immunefi
 
 ## TODOs
-- play withehat on one of immunefi project => open zeppelin
