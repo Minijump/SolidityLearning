@@ -9,6 +9,7 @@ contract GovernorExampleTest is Test {
     GovernorExample public governor;
     address public ethOwner;
     address public noEtherOwner;
+    uint48 newVotingDelay = 2;
 
     function setUp() public {
         governor = new GovernorExample();
@@ -36,21 +37,26 @@ contract GovernorExampleTest is Test {
         assertEq(governor.getVotes(address(0), 0), 10e18);
     }
 
+    // Test actions
+    function _getProposalValues() internal view returns (address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description) {
+        address[] memory proposalTargets = new address[](1);
+        proposalTargets[0] = address(governor);
+        uint256[] memory proposalValues = new uint256[](1);
+        proposalValues[0] = 0;
+        bytes[] memory proposalCalldatas = new bytes[](1);
+        proposalCalldatas[0] = abi.encodeCall(GovernorSettings.setVotingDelay, (newVotingDelay));
+        string memory proposalDescription = "Set voting delay to newVotingDelay blocks";
+
+        return (proposalTargets, proposalValues, proposalCalldatas, proposalDescription);
+    }
+
     function testSetVotingDelayDirectCallFails() public {
-        uint48 newVotingDelay = 2;
         vm.expectRevert();
         governor.setVotingDelay(newVotingDelay);
     }
 
     function testSetVotingDelayOnlyThroughGovernanceProposal() public {
-        uint48 newVotingDelay = 2;
-        address[] memory targets = new address[](1);
-        targets[0] = address(governor);
-        uint256[] memory values = new uint256[](1);
-        values[0] = 0;
-        bytes[] memory calldatas = new bytes[](1);
-        calldatas[0] = abi.encodeCall(GovernorSettings.setVotingDelay, (newVotingDelay));
-        string memory description = "Set voting delay to 2 blocks";
+        (address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description) = _getProposalValues();
         bytes32 descriptionHash = keccak256(bytes(description));
 
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
@@ -81,14 +87,7 @@ contract GovernorExampleTest is Test {
     }
 
     function testVoteProposal() public {
-        uint48 newVotingDelay = 2;
-        address[] memory targets = new address[](1);
-        targets[0] = address(governor);
-        uint256[] memory values = new uint256[](1);
-        values[0] = 0;
-        bytes[] memory calldatas = new bytes[](1);
-        calldatas[0] = abi.encodeCall(GovernorSettings.setVotingDelay, (newVotingDelay));
-        string memory description = "Set voting delay to 2 blocks";
+        (address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description) = _getProposalValues();
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
 
         // Move past snapshot so voting is active.
@@ -104,14 +103,7 @@ contract GovernorExampleTest is Test {
     }
 
     function testAcceptedProposalIsExecuted() public {
-        uint48 newVotingDelay = 2;
-        address[] memory targets = new address[](1);
-        targets[0] = address(governor);
-        uint256[] memory values = new uint256[](1);
-        values[0] = 0;
-        bytes[] memory calldatas = new bytes[](1);
-        calldatas[0] = abi.encodeCall(GovernorSettings.setVotingDelay, (newVotingDelay));
-        string memory description = "Set voting delay to 2 blocks";
+        (address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description) = _getProposalValues();
         bytes32 descriptionHash = keccak256(bytes(description));
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
 
@@ -126,14 +118,7 @@ contract GovernorExampleTest is Test {
     }
 
     function testRefusedProposalIsNotExecuted() public {
-        uint48 newVotingDelay = 2;
-        address[] memory targets = new address[](1);
-        targets[0] = address(governor);
-        uint256[] memory values = new uint256[](1);
-        values[0] = 0;
-        bytes[] memory calldatas = new bytes[](1);
-        calldatas[0] = abi.encodeCall(GovernorSettings.setVotingDelay, (newVotingDelay));
-        string memory description = "Set voting delay to 2 blocks";
+        (address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description) = _getProposalValues();
         bytes32 descriptionHash = keccak256(bytes(description));
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
 
@@ -148,14 +133,7 @@ contract GovernorExampleTest is Test {
     }
 
     function testMultipleVotesFromSameAccountFails() public {
-        uint48 newVotingDelay = 2;
-        address[] memory targets = new address[](1);
-        targets[0] = address(governor);
-        uint256[] memory values = new uint256[](1);
-        values[0] = 0;
-        bytes[] memory calldatas = new bytes[](1);
-        calldatas[0] = abi.encodeCall(GovernorSettings.setVotingDelay, (newVotingDelay));
-        string memory description = "Set voting delay to 2 blocks";
+        (address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description) = _getProposalValues();
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
 
         vm.roll(block.number + governor.votingDelay() + 1);
@@ -165,14 +143,7 @@ contract GovernorExampleTest is Test {
     }
 
     function testInvalidVoteTypeFails() public {
-        uint48 newVotingDelay = 2;
-        address[] memory targets = new address[](1);
-        targets[0] = address(governor);
-        uint256[] memory values = new uint256[](1);
-        values[0] = 0;
-        bytes[] memory calldatas = new bytes[](1);
-        calldatas[0] = abi.encodeCall(GovernorSettings.setVotingDelay, (newVotingDelay));
-        string memory description = "Set voting delay to 2 blocks";
+        (address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description) = _getProposalValues();
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
 
         vm.roll(block.number + governor.votingDelay() + 1);
@@ -181,14 +152,7 @@ contract GovernorExampleTest is Test {
     }
 
     function testMultipleAccountsVoting() public {
-        uint48 newVotingDelay = 2;
-        address[] memory targets = new address[](1);
-        targets[0] = address(governor);
-        uint256[] memory values = new uint256[](1);
-        values[0] = 0;
-        bytes[] memory calldatas = new bytes[](1);
-        calldatas[0] = abi.encodeCall(GovernorSettings.setVotingDelay, (newVotingDelay));
-        string memory description = "Set voting delay to 2 blocks";
+        (address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description) = _getProposalValues();
         uint256 proposalId = governor.propose(targets, values, calldatas, description);
 
         vm.roll(block.number + governor.votingDelay() + 1);
@@ -207,15 +171,7 @@ contract GovernorExampleTest is Test {
     }
 
     function testThresholdNotReachedReverts() public {
-        uint48 newVotingDelay = 2;
-        address[] memory targets = new address[](1);
-        targets[0] = address(governor);
-        uint256[] memory values = new uint256[](1);
-        values[0] = 0;
-        bytes[] memory calldatas = new bytes[](1);
-        calldatas[0] = abi.encodeCall(GovernorSettings.setVotingDelay, (newVotingDelay));
-        string memory description = "Set voting delay to 2 blocks";
-        // bytes32 descriptionHash = keccak256(bytes(description));
+        (address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description) = _getProposalValues();
 
         vm.expectRevert();
         vm.prank(noEtherOwner);
