@@ -26,21 +26,25 @@ contract GovernorExample is GovernorSettings, GovernorCountingSimple {
 
     function proposalThreshold()
         public
-        view
+        pure
         override(Governor, GovernorSettings)
         returns (uint256)
     {
-        return super.proposalThreshold();
+        return 50e18; // 10 tokens
     }
 
     function _getVotes(
         address account,
         uint256 blockNumber,
         bytes memory params
-    ) internal pure override returns (uint256) {
+    ) internal view override returns (uint256) {
         account;
         blockNumber;
         params;
-        return 10e18; // 10 tokens for testing purposes
+        if (account.balance >= 1 ether) {
+            return 50e18; // 50 tokens for testing purposes
+        } else {
+            return 10e18; // 1 token for testing purposes
+        }
     }
 }
