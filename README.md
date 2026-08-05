@@ -91,6 +91,4 @@ see https://immunefi.com/bug-bounty/openzeppelin/scope/#top
 testing https://github.com/OpenZeppelin/openzeppelin-contracts?utm_source=immunefi
 
 ## TODOs
-- find a project I can work on during several weeks
-- Read 'Mastering ethereum'
-- Watch (at least partly) intro to security from cyfrin
+- Read 'Mastering ethereum' + update cheatsheets in parallel?
